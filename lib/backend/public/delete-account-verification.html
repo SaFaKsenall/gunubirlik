@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Verilerini Silme</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/themes.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .account-settings-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 2rem;
+        }
+
+        .settings-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .warning-box {
+            background: rgba(220, 53, 69, 0.1);
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: #dc3545;
+        }
+
+        .warning-box i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box h3 {
+            margin: 0 0 1rem 0;
+            color: #dc3545;
+        }
+
+        .warning-box p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .setting-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .setting-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        }
+
+        .setting-button.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .setting-button.danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #444;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(118, 75, 162, 0.2);
+            border-radius: 12px;
+            background: white;
+            color: #333;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(118, 75, 162, 0.5);
+            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+        }
+
+        .verification-code-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .verification-code-input {
+            width: 3rem;
+            height: 3.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid rgba(118, 75, 162, 0.2);
+            border-radius: 8px;
+            margin: 0 0.25rem;
+        }
+
+        .verification-code-input:focus {
+            outline: none;
+            border-color: rgba(118, 75, 162, 0.5);
+            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .alert.error {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .timer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="account-settings-container">
+        <div class="settings-card">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #764ba2;">Hesap Verilerini Silme</h2>
+            
+            <div id="alertBox" class="alert"></div>
+            
+            <!-- Adım 1: E-posta Girişi -->
+            <div id="step1" class="step active">
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle" style="display: block; text-align: center;"></i>
+                    <h3 style="text-align: center;">Dikkat!</h3>
+                    <p>Bu işlem, hesabınızla ilgili tüm verileri silecektir. Bu işlem geri alınamaz.</p>
+                    <p style="margin-top: 0.5rem;">Devam etmek için e-posta adresinizi girin ve doğrulama kodu alın.</p>
+                </div>
+                
+                <form id="emailForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">E-posta Adresiniz</label>
+                        <input type="email" id="email" class="form-input" placeholder="ornek@mail.com" required>
+                    </div>
+                    
+                    <button type="submit" class="setting-button">Doğrulama Kodu Gönder</button>
+                </form>
+                
+                <a href="/sidebar_screens/settings.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Ayarlara Geri Dön
+                </a>
+            </div>
+            
+            <!-- Adım 2: Doğrulama Kodu -->
+            <div id="step2" class="step">
+                <div class="warning-box">
+                    <i class="fas fa-envelope" style="display: block; text-align: center;"></i>
+                    <h3 style="text-align: center;">Doğrulama Kodu Gönderildi</h3>
+                    <p>E-posta adresinize 6 haneli bir doğrulama kodu gönderdik. Lütfen bu kodu aşağıya girin.</p>
+                </div>
+                
+                <form id="verificationForm">
+                    <div class="form-group">
+                        <label class="form-label">Doğrulama Kodu</label>
+                        <div class="verification-code-container">
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        </div>
+                    </div>
+                    
+                    <div class="timer">Kalan süre: <span id="countdown">05:00</span></div>
+                    
+                    <button type="submit" class="setting-button">Doğrula</button>
+                    <button type="button" id="resendCodeBtn" class="setting-button" style="background: transparent; color: #764ba2; margin-top: 0.5rem;" disabled>
+                        Kodu Tekrar Gönder (<span id="resendCountdown">60</span>)
+                    </button>
+                </form>
+                
+                <a href="#" id="backToStep1" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </a>
+            </div>
+            
+            <!-- Adım 3: Onay -->
+            <div id="step3" class="step">
+                <div class="warning-box">
+                    <i class="fas fa-check-circle" style="display: block; text-align: center; color: #28a745;"></i>
+                    <h3 style="text-align: center; color: #28a745;">Doğrulama Başarılı</h3>
+                    <p>E-posta adresiniz başarıyla doğrulandı. Hesap verilerinizi silmek için şifrenizi girin ve onay verin.</p>
+                </div>
+                
+                <form id="confirmationForm">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Şifreniz</label>
+                        <input type="password" id="password" class="form-input" placeholder="Şifrenizi girin" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmText" class="form-label">Onay</label>
+                        <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">
+                            Onaylamak için aşağıya "VERİLERİMİ SİL" yazın.
+                        </p>
+                        <input type="text" id="confirmText" class="form-input" placeholder="VERİLERİMİ SİL" required>
+                    </div>
+                    
+                    <button type="submit" class="setting-button danger">Hesap Verilerimi Sil</button>
+                </form>
+                
+                <a href="/sidebar_screens/settings.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i> İşlemi İptal Et
+                </a>
+            </div>
+            
+            <!-- Adım 4: İşlem Tamamlandı -->
+            <div id="step4" class="step">
+                <div style="text-align: center; padding: 2rem 0;">
+                    <i class="fas fa-check-circle" style="font-size: 4rem; color: #28a745; margin-bottom: 1.5rem;"></i>
+                    <h3 style="color: #28a745; margin-bottom: 1rem;">İşlem Tamamlandı</h3>
+                    <p>Hesap verileriniz başarıyla silindi. Birkaç saniye içinde çıkış yapılacak.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, 
+            firestore,
+            signOut,
+            onAuthStateChanged,
+            doc,
+            getDoc,
+            updateDoc,
+            collection,
+            query,
+            where,
+            getDocs,
+            deleteDoc,
+            serverTimestamp,
+            reauthenticateWithCredential,
+            EmailAuthProvider
+        } from './assets/js/firebaseConfig.js';
+        
+        // Firebase'in e-posta gönderme fonksiyonlarını kaldırıyoruz
+        // Bunun yerine API endpoint'lerini kullanacağız
+
+        // DOM elementleri
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        const alertBox = document.getElementById('alertBox');
+        const emailForm = document.getElementById('emailForm');
+        const verificationForm = document.getElementById('verificationForm');
+        const confirmationForm = document.getElementById('confirmationForm');
+        const backToStep1 = document.getElementById('backToStep1');
+        const resendCodeBtn = document.getElementById('resendCodeBtn');
+        const countdownEl = document.getElementById('countdown');
+        const resendCountdownEl = document.getElementById('resendCountdown');
+        
+        // Doğrulama kodu inputları
+        const codeInputs = document.querySelectorAll('.verification-code-input');
+        
+        // Değişkenler
+        let verificationCode = '';
+        let userEmail = '';
+        let userId = '';
+        let deleteToken = '';
+        let countdownTimer;
+        let resendCountdownTimer;
+        let verificationTimeout;
+        
+        // API URL'leri
+        const API_BASE_URL = 'https://3000-idx-flutter-1740770618502.cluster-6yqpn75caneccvva7hjo4uejgk.cloudworkstations.dev'; // Yerel geliştirme için
+        // const API_BASE_URL = 'https://api.gunubirlik.com'; // Canlı ortam için
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', () => {
+            // Oturum kontrolü
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    console.log('Kullanıcı oturumu açık:', user.uid);
+                    userId = user.uid;
+                    
+                    // E-posta alanını otomatik doldur
+                    const emailInput = document.getElementById('email');
+                    if (emailInput && user.email) {
+                        emailInput.value = user.email;
+                        userEmail = user.email;
+                    }
+                } else {
+                    console.log('Kullanıcı oturumu kapalı, yönlendiriliyor...');
+                    showAlert('Oturum açmanız gerekiyor.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/register.html';
+                    }, 2000);
+                }
+            });
+            
+            // Event listener'ları ayarla
+            setupEventListeners();
+            
+            // API sunucusunun çalışıp çalışmadığını kontrol et
+            checkApiStatus();
+        });
+        
+        // API durumunu kontrol et
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    console.log('API sunucusu çalışıyor');
+                } else {
+                    console.error('API sunucusu çalışıyor ancak bir hata döndürdü:', response.status);
+                    showAlert('API sunucusu ile iletişim kurulurken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
+                }
+            } catch (error) {
+                console.error('API sunucusuna bağlanılamadı:', error);
+                showAlert('API sunucusuna bağlanılamadı. Lütfen sunucunun çalıştığından emin olun.', 'error');
+            }
+        }
+
+        // Event listener'ları ayarla
+        function setupEventListeners() {
+            // E-posta formu gönderimi
+            emailForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                userEmail = document.getElementById('email').value.trim();
+                
+                if (!userEmail) {
+                    showAlert('Lütfen e-posta adresinizi girin.', 'error');
+                    return;
+                }
+                
+                try {
+                    // API'yi kullanarak doğrulama kodu gönder
+                    const response = await fetch(`${API_BASE_URL}/api/account/send-delete-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: userEmail })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Doğrulama kodu gönderilirken bir hata oluştu');
+                    }
+                    
+                    // Geliştirme ortamında kodu konsola yazdır
+                    if (data.deleteCode) {
+                        console.log('Doğrulama kodu (geliştirme ortamı):', data.deleteCode);
+                        verificationCode = data.deleteCode;
+                    }
+                    
+                    // Adım 2'ye geç
+                    showStep(2);
+                    startCountdown();
+                    startResendCountdown();
+                } catch (error) {
+                    console.error('Doğrulama kodu gönderme hatası:', error);
+                    showAlert(error.message || 'Doğrulama kodu gönderilirken bir hata oluştu.', 'error');
+                }
+            });
+            
+            // Doğrulama formu gönderimi
+            verificationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Girilen kodu al
+                const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
+                
+                try {
+                    // API'yi kullanarak doğrulama kodunu kontrol et
+                    const response = await fetch(`${API_BASE_URL}/api/account/verify-delete-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            email: userEmail, 
+                            code: enteredCode 
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Doğrulama kodu doğrulanamadı');
+                    }
+                    
+                    // Doğrulama başarılı, token'ı kaydet
+                    deleteToken = data.deleteToken;
+                    userId = data.userId;
+                    
+                    console.log('Doğrulama başarılı. Token:', deleteToken);
+                    
+                    // Doğrulama başarılı
+                    clearTimeout(verificationTimeout);
+                    clearInterval(countdownTimer);
+                    showStep(3);
+                } catch (error) {
+                    console.error('Doğrulama hatası:', error);
+                    showAlert(error.message || 'Doğrulama sırasında bir hata oluştu.', 'error');
+                    
+                    // Inputları temizle
+                    codeInputs.forEach(input => {
+                        input.value = '';
+                    });
+                    codeInputs[0].focus();
+                }
+            });
+            
+            // Onay formu gönderimi
+            confirmationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const password = document.getElementById('password').value;
+                const confirmText = document.getElementById('confirmText').value;
+                
+                if (!password) {
+                    showAlert('Lütfen şifrenizi girin.', 'error');
+                    return;
+                }
+                
+                if (confirmText !== 'VERİLERİMİ SİL') {
+                    showAlert('Lütfen onay metnini doğru girin.', 'error');
+                    return;
+                }
+                
+                try {
+                    // Kullanıcının kimliğini doğrula
+                    const user = auth.currentUser;
+                    if (!user) {
+                        showAlert('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', 'error');
+                        setTimeout(() => window.location.href = '/register.html', 2000);
+                        return;
+                    }
+                    
+                    // Kullanıcının e-posta adresini al
+                    const email = user.email;
+                    
+                    // Kullanıcının kimliğini yeniden doğrula
+                    try {
+                        const credential = EmailAuthProvider.credential(email, password);
+                        await reauthenticateWithCredential(user, credential);
+                    } catch (authError) {
+                        console.error('Kimlik doğrulama hatası:', authError);
+                        showAlert('Şifreniz hatalı. Lütfen tekrar deneyin.', 'error');
+                        return;
+                    }
+                    
+                    // API'yi kullanarak hesabı sil
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/account/delete-account`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 
+                                userId: userId, 
+                                deleteToken: deleteToken,
+                                password: password
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!data.success) {
+                            throw new Error(data.message || 'Hesap silinirken bir hata oluştu');
+                        }
+                        
+                        console.log('Hesap başarıyla silindi');
+                        
+                        // Adım 4'e geç
+                        showStep(4);
+                        
+                        // 5 saniye sonra çıkış yap
+                        setTimeout(() => {
+                            signOut(auth).then(() => {
+                                window.location.href = '/register.html';
+                            });
+                        }, 5000);
+                    } catch (apiError) {
+                        console.error('API hatası:', apiError);
+                        
+                        // API hatası durumunda kullanıcıya bilgi ver
+                        showAlert(`API hatası: ${apiError.message}. Yedek yöntem deneniyor...`, 'error');
+                        
+                        // Yedek yöntem: Firebase ile doğrudan silme
+                        await deleteUserDataFallback();
+                        
+                        // Adım 4'e geç
+                        showStep(4);
+                        
+                        // 5 saniye sonra çıkış yap
+                        setTimeout(() => {
+                            signOut(auth).then(() => {
+                                window.location.href = '/register.html';
+                            });
+                        }, 5000);
+                    }
+                } catch (error) {
+                    console.error('Veri silme hatası:', error);
+                    showAlert('Veriler silinirken bir hata oluştu: ' + error.message, 'error');
+                }
+            });
+            
+            // Geri dön butonu
+            backToStep1.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearTimeout(verificationTimeout);
+                clearInterval(countdownTimer);
+                clearInterval(resendCountdownTimer);
+                showStep(1);
+            });
+            
+            // Kodu tekrar gönder butonu
+            resendCodeBtn.addEventListener('click', async () => {
+                if (resendCodeBtn.disabled) return;
+                
+                try {
+                    // API'yi kullanarak yeni kod gönder
+                    const response = await fetch(`${API_BASE_URL}/api/account/send-delete-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: userEmail })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Doğrulama kodu gönderilirken bir hata oluştu');
+                    }
+                    
+                    // Geliştirme ortamında kodu konsola yazdır
+                    if (data.deleteCode) {
+                        console.log('Yeni doğrulama kodu (geliştirme ortamı):', data.deleteCode);
+                        verificationCode = data.deleteCode;
+                    }
+                    
+                    showAlert('Yeni doğrulama kodu gönderildi.', 'success');
+                    startCountdown();
+                    startResendCountdown();
+                } catch (error) {
+                    console.error('Kod tekrar gönderme hatası:', error);
+                    showAlert('Kod tekrar gönderilirken bir hata oluştu: ' + error.message, 'error');
+                }
+            });
+            
+            // Doğrulama kodu inputları için event listener'lar
+            codeInputs.forEach((input, index) => {
+                // Input değiştiğinde bir sonraki input'a geç
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1) {
+                        if (index < codeInputs.length - 1) {
+                            codeInputs[index + 1].focus();
+                        }
+                    }
+                });
+                
+                // Backspace tuşuna basıldığında bir önceki input'a geç
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        // Yedek yöntem: Firebase ile doğrudan kullanıcı verilerini sil
+        async function deleteUserDataFallback() {
+            try {
+                console.log('Yedek yöntem: Kullanıcı verileri siliniyor:', userId);
+                
+                // Kullanıcının kimliğini doğrula
+                const user = auth.currentUser;
+                if (!user) {
+                    throw new Error('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
+                }
+                
+                // Kullanıcının verilerini silmeye başla
+                // Önce ilişkili tüm verileri topla
+                const deleteOperations = [];
+                
+                // Kullanıcının iş ilanlarını bul
+                const jobsQuery = query(collection(firestore, 'jobs'), where('userId', '==', userId));
+                const jobsSnapshot = await getDocs(jobsQuery);
+                
+                jobsSnapshot.forEach(jobDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'jobs', jobDoc.id)));
+                });
+                
+                // Kullanıcının mesajlarını bul
+                const messagesQuery = query(collection(firestore, 'messages'), where('senderId', '==', userId));
+                const messagesSnapshot = await getDocs(messagesQuery);
+                
+                messagesSnapshot.forEach(messageDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'messages', messageDoc.id)));
+                });
+                
+                // Kullanıcının alıcı olduğu mesajları bul
+                const receivedMessagesQuery = query(collection(firestore, 'messages'), where('receiverId', '==', userId));
+                const receivedMessagesSnapshot = await getDocs(receivedMessagesQuery);
+                
+                receivedMessagesSnapshot.forEach(messageDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'messages', messageDoc.id)));
+                });
+                
+                // QR oturumlarını bul
+                const qrSessionsQuery = query(collection(firestore, 'qr_sessions'), where('userId', '==', userId));
+                const qrSessionsSnapshot = await getDocs(qrSessionsQuery);
+                
+                qrSessionsSnapshot.forEach(sessionDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'qr_sessions', sessionDoc.id)));
+                });
+                
+                // Cihaz tokenlarını bul
+                const deviceTokensQuery = query(collection(firestore, 'device_tokens'), where('userId', '==', userId));
+                const deviceTokensSnapshot = await getDocs(deviceTokensQuery);
+                
+                deviceTokensSnapshot.forEach(tokenDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'device_tokens', tokenDoc.id)));
+                });
+                
+                // Favorileri bul
+                const favoritesQuery = query(collection(firestore, 'favorites'), where('userId', '==', userId));
+                const favoritesSnapshot = await getDocs(favoritesQuery);
+                
+                favoritesSnapshot.forEach(favoriteDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'favorites', favoriteDoc.id)));
+                });
+                
+                // Bildirimleri bul
+                const notificationsQuery = query(collection(firestore, 'notifications'), where('userId', '==', userId));
+                const notificationsSnapshot = await getDocs(notificationsQuery);
+                
+                notificationsSnapshot.forEach(notificationDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'notifications', notificationDoc.id)));
+                });
+                
+                // Doğrulama kodlarını bul
+                const verificationCodesQuery = query(collection(firestore, 'verification_codes'), where('userId', '==', userId));
+                const verificationCodesSnapshot = await getDocs(verificationCodesQuery);
+                
+                verificationCodesSnapshot.forEach(codeDoc => {
+                    deleteOperations.push(deleteDoc(doc(firestore, 'verification_codes', codeDoc.id)));
+                });
+                
+                // Kullanıcının oturumlarını temizle
+                localStorage.removeItem('qrSession');
+                sessionStorage.clear();
+                
+                // Tüm ilişkili verileri sil
+                console.log(`Toplam ${deleteOperations.length} veri silinecek`);
+                await Promise.all(deleteOperations);
+                
+                // Son olarak kullanıcı belgesini sil
+                await deleteDoc(doc(firestore, 'users', userId));
+                
+                // Önce kullanıcıyı Firebase Authentication'dan sil
+                try {
+                    if (user) {
+                        console.log('Kullanıcı Firebase Authentication\'dan siliniyor...');
+                        await user.delete();
+                        console.log('Kullanıcı Firebase Authentication\'dan başarıyla silindi');
+                    }
+                } catch (authError) {
+                    console.error('Kullanıcı Authentication\'dan silinemedi:', authError);
+                    throw new Error('Kullanıcı hesabı silinemedi. Lütfen daha sonra tekrar deneyin.');
+                }
+                
+                console.log('Kullanıcı verileri başarıyla silindi');
+                return true;
+            } catch (error) {
+                console.error('Veri silme hatası:', error);
+                throw error;
+            }
+        }
+
+        // Geri sayım başlat
+        function startCountdown() {
+            let totalSeconds = 5 * 60; // 5 dakika
+            
+            clearInterval(countdownTimer);
+            
+            countdownTimer = setInterval(() => {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (totalSeconds <= 0) {
+                    clearInterval(countdownTimer);
+                    countdownEl.textContent = '00:00';
+                    showAlert('Doğrulama kodunun süresi doldu. Lütfen yeni kod isteyin.', 'error');
+                }
+                
+                totalSeconds--;
+            }, 1000);
+        }
+
+        // Tekrar gönderme geri sayımı başlat
+        function startResendCountdown() {
+            let seconds = 60; // 60 saniye bekle
+            
+            resendCodeBtn.disabled = true;
+            
+            clearInterval(resendCountdownTimer);
+            
+            resendCountdownTimer = setInterval(() => {
+                resendCountdownEl.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(resendCountdownTimer);
+                    resendCodeBtn.disabled = false;
+                    resendCodeBtn.textContent = 'Kodu Tekrar Gönder';
+                }
+                
+                seconds--;
+            }, 1000);
+        }
+
+        // Adım göster
+        function showStep(stepNumber) {
+            // Tüm adımları gizle
+            [step1, step2, step3, step4].forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // İlgili adımı göster
+            switch (stepNumber) {
+                case 1:
+                    step1.classList.add('active');
+                    break;
+                case 2:
+                    step2.classList.add('active');
+                    // İlk input'a odaklan
+                    setTimeout(() => {
+                        codeInputs[0].focus();
+                    }, 100);
+                    break;
+                case 3:
+                    step3.classList.add('active');
+                    break;
+                case 4:
+                    step4.classList.add('active');
+                    break;
+            }
+        }
+
+        // Uyarı göster
+        function showAlert(message, type) {
+            alertBox.textContent = message;
+            alertBox.className = `alert ${type}`;
+            alertBox.style.display = 'block';
+            
+            // 5 saniye sonra uyarıyı gizle
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

@@ -153,36 +153,77 @@ class Job {
   }
 
   factory Job.fromJson(Map<String, dynamic> json) {
-    return Job(
-      id: json['id'],
-      jobName: json['jobName'],
-      jobDescription: json['jobDescription'],
-      jobPrice: json['jobPrice'].toDouble(),
-      employerId: json['employerId'],
-      category: json['category'] ?? '',
-      neighborhood: json['neighborhood'],
-      location: json['location'] != null
-          ? GeoPoint(
-              json['location']['latitude'], json['location']['longitude'])
-          : null,
-      hasLocation: json['hasLocation'] ?? false,
-    );
+    try {
+      return Job(
+        id: json['id'] ?? '',
+        jobName: json['jobName'] ?? '',
+        jobDescription: json['jobDescription'] ?? '',
+        jobPrice: (json['jobPrice'] is num) ? json['jobPrice'].toDouble() : 0.0,
+        employerId: json['employerId'] ?? '',
+        category: json['category'] ?? 'Uncategorized',
+        neighborhood: json['neighborhood'],
+        username: json['username'],
+        profileImage: json['profileImage'],
+        budget: (json['budget'] is num) ? json['budget'].toDouble() : 0.0,
+        likes: (json['likes'] is num) ? json['likes'].toInt() : 0,
+        comments: (json['comments'] is num) ? json['comments'].toInt() : 0,
+        location: json['location'] != null
+            ? GeoPoint(
+                json['location']['latitude'] ?? 0.0, 
+                json['location']['longitude'] ?? 0.0)
+            : null,
+        hasLocation: json['hasLocation'] == true || json['hasLocation'] == 1,
+        status: json['status'] ?? 'active',
+        createdAt: json['createdAt'] != null 
+            ? DateTime.parse(json['createdAt']) 
+            : null,
+      );
+    } catch (e) {
+      print('Job.fromJson hatası: $e, JSON: $json');
+      // Hata durumunda minimum gerekli alanlarla bir iş nesnesi döndür
+      return Job(
+        id: json['id'] ?? 'error_id',
+        jobName: json['jobName'] ?? 'Hata: İş adı yüklenemedi',
+        jobDescription: json['jobDescription'] ?? 'Hata: İş açıklaması yüklenemedi',
+        jobPrice: 0.0,
+        employerId: json['employerId'] ?? '',
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'jobName': jobName,
-      'jobDescription': jobDescription,
-      'jobPrice': jobPrice,
-      'employerId': employerId,
-      'category': category,
-      'neighborhood': neighborhood,
-      'location': location != null
-          ? {'latitude': location!.latitude, 'longitude': location!.longitude}
-          : null,
-      'hasLocation': hasLocation,
-    };
+    try {
+      return {
+        'id': id,
+        'jobName': jobName,
+        'jobDescription': jobDescription,
+        'jobPrice': jobPrice,
+        'employerId': employerId,
+        'category': category,
+        'neighborhood': neighborhood,
+        'username': username,
+        'profileImage': profileImage,
+        'budget': budget,
+        'likes': likes,
+        'comments': comments,
+        'location': location != null
+            ? {'latitude': location!.latitude, 'longitude': location!.longitude}
+            : null,
+        'hasLocation': hasLocation,
+        'status': status,
+        'createdAt': createdAt?.toIso8601String(),
+      };
+    } catch (e) {
+      print('Job.toJson hatası: $e');
+      // Hata durumunda minimum gerekli alanları içeren bir harita döndür
+      return {
+        'id': id,
+        'jobName': jobName,
+        'jobDescription': jobDescription,
+        'jobPrice': jobPrice,
+        'employerId': employerId,
+      };
+    }
   }
 }
 
@@ -264,31 +305,54 @@ class Review {
   }
 
   factory Review.fromJson(Map<String, dynamic> json) {
-    return Review(
-      employerId: json['employerId'],
-      reviewerId: json['reviewerId'],
-      rating: json['rating'].toDouble(),
-      comment: json['comment'],
-      reviewerUsername: json['reviewerUsername'],
-      reviewerProfileImage: json['reviewerProfileImage'],
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      jobId: json['jobId'],
-      status: json['status'] ?? 'active',
-    );
+    try {
+      return Review(
+        employerId: json['employerId'] ?? '',
+        reviewerId: json['reviewerId'] ?? '',
+        rating: (json['rating'] is num) ? json['rating'].toDouble() : 0.0,
+        comment: json['comment'] ?? '',
+        reviewerUsername: json['reviewerUsername'],
+        reviewerProfileImage: json['reviewerProfileImage'],
+        createdAt: json['createdAt'] != null 
+            ? DateTime.parse(json['createdAt']) 
+            : null,
+        jobId: json['jobId'],
+        status: json['status'] ?? 'active',
+      );
+    } catch (e) {
+      print('Review.fromJson hatası: $e, JSON: $json');
+      // Hata durumunda minimum gerekli alanlarla bir değerlendirme nesnesi döndür
+      return Review(
+        employerId: json['employerId'] ?? '',
+        reviewerId: json['reviewerId'] ?? '',
+        rating: 0.0,
+        comment: 'Hata: Değerlendirme yüklenemedi',
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'employerId': employerId,
-      'reviewerId': reviewerId,
-      'rating': rating,
-      'comment': comment,
-      'reviewerUsername': reviewerUsername,
-      'reviewerProfileImage': reviewerProfileImage,
-      'createdAt': createdAt?.toIso8601String(),
-      'jobId': jobId,
-      'status': status,
-    };
+    try {
+      return {
+        'employerId': employerId,
+        'reviewerId': reviewerId,
+        'rating': rating,
+        'comment': comment,
+        'reviewerUsername': reviewerUsername,
+        'reviewerProfileImage': reviewerProfileImage,
+        'createdAt': createdAt?.toIso8601String(),
+        'jobId': jobId,
+        'status': status,
+      };
+    } catch (e) {
+      print('Review.toJson hatası: $e');
+      // Hata durumunda minimum gerekli alanları içeren bir harita döndür
+      return {
+        'employerId': employerId,
+        'reviewerId': reviewerId,
+        'rating': rating,
+        'comment': comment,
+      };
+    }
   }
 }

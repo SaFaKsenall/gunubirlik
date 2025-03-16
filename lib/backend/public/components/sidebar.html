@@ -1,0 +1,38 @@
+<div class="sidebar">
+    <div class="user-info">
+        <i class="fas fa-user"></i>
+        <span id="userDisplayName">Loading...</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="#" class="share-job-btn" onclick="window.location.href='/share-job.html'">
+                <i class="fas fa-plus-circle"></i> İş Paylaş
+            </a>
+        </li>
+        <li>
+            <a href="#" onclick="window.location.href='/searchjob.html'" class="search-job-btn">
+                <i class="fas fa-search"></i> İş Ara
+            </a>
+        </li>
+        <li><a href="/homepage.html" id="dashboardLink">
+            <i class="fas fa-home"></i> Dashboard</a>
+        </li>
+        <li><a href="/sidebar_screens/statistics.html" id="statisticsLink">
+            <i class="fas fa-chart-bar"></i> İstatistikler</a>
+        </li>
+        <li><a href="/sidebar_screens/profile.html" id="profileLink">
+            <i class="fas fa-user-circle"></i> Profil</a>
+        </li>
+        <li><a href="/sidebar_screens/settings.html" id="settingsLink">
+            <i class="fas fa-cog"></i> Ayarlar</a>
+        </li>
+        <li><a href="#" onclick="logout(); return false;">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Mobil menü toggle butonu -->
+<button class="menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button> 

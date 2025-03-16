@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Günübirlik Uygulaması Politikaları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #764ba2;
+            --secondary-color: #667eea;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-primary: #fff;
+            --bg-secondary: #f8f8f8;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .policy-nav {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-buttons {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background-color: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 { 
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .important-note {
+            background: rgba(118, 75, 162, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="policy-nav">
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showPolicy('user')">
+                <i class="fas fa-user-shield"></i> Kullanıcı Sözleşmesi
+            </button>
+            <button class="nav-button active" onclick="showPolicy('privacy')">
+                <i class="fas fa-lock"></i> Gizlilik Politikası
+            </button>
+            <button class="nav-button" onclick="showPolicy('distance')">
+                <i class="fas fa-shopping-cart"></i> Mesafeli Satış
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Günübirlik Uygulaması Gizlilik Politikası</h1>
+        </header>
+
+        <section class="section">
+            <h2>Giriş</h2>
+            <p>Bu Gizlilik Politikası, Günübirlik mobil uygulamasının ("<strong>Uygulama</strong>") kullanıcılarından topladığı kişisel verilerin nasıl işlendiğini açıklamaktadır. Günübirlik Uygulaması ("<strong>Günübirlik</strong>", "<strong>biz</strong>", "<strong>bizim</strong>") olarak, kullanıcılarımızın gizliliğini korumaya ve kişisel verilerini yürürlükteki veri koruma mevzuatına uygun olarak işlemeye büyük önem veriyoruz. Bu politika, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("<strong>KVKK</strong>") ve ilgili diğer mevzuat çerçevesinde hazırlanmıştır. Uygulamayı kullanarak, bu Gizlilik Politikası'nda belirtilen uygulamaları kabul etmiş sayılırsınız. Lütfen bu politikayı dikkatlice okuyunuz.</p>
+        </section>
+
+        <section class="section">
+            <h2>1. Veri Sorumlusu</h2>
+            <p>Veri sorumlusu: [Şirket Adı (Varsa)]</p>
+            <p>Adres: [Şirket Adresi]</p>
+            <p>E-posta: [Veri Koruma İletişim E-postası]</p>
+            <p>Web Sitesi (Varsa): [Web Sitesi Adresi]</p>
+        </section>
+
+        <section class="section">
+            <h2>2. Toplanan Kişisel Veriler</h2>
+            <p>Uygulamamız aracılığıyla aşağıdaki kişisel verileriniz toplanabilir:</p>
+            <ul>
+                <li><strong>Kimlik Bilgileri:</strong> Ad, soyad.</li>
+                <li><strong>İletişim Bilgileri:</strong> E-posta adresi, telefon numarası.</li>
+                <li><strong>Konum Bilgileri:</strong> Cihazınızın konum bilgisi (yalnızca konum tabanlı hizmetler için ve izninizle).</li>
+                <li><strong>Profil Bilgileri:</strong> İş arayan veya işveren profili bilgileri, özgeçmiş bilgileri, beceriler, deneyimler, eğitim bilgileri.</li>
+                <li><strong>Kullanım Verileri:</strong> Uygulama kullanımınızla ilgili bilgiler (uygulama içi etkileşimler, arama geçmişi, tıklanan ilanlar, oturum süreleri, kullanılan özellikler).</li>
+                <li><strong>Cihaz Bilgileri:</strong> Cihaz türü, işletim sistemi, cihaz kimliği, IP adresi, tarayıcı türü.</li>
+                <li><strong>İletişim Kayıtları:</strong> Uygulama üzerinden yaptığınız iletişim kayıtları (mesajlar, başvurular vb.).</li>
+                <li><strong>Ödeme Bilgileri (Eğer Varsa):</strong> Kredi kartı bilgileri, banka hesap bilgileri (yalnızca ücretli hizmetler kullanılıyorsa ve ödeme işlemleri için).</li>
+                <li><strong>Pazarlama ve İletişim Tercihleri:</strong> Pazarlama iletişimleri almayı tercih edip etmediğiniz bilgisi.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>3. Kişisel Verilerin Toplanma Yöntemleri</h2>
+            <p>Kişisel verilerinizi aşağıdaki yöntemlerle topluyoruz:</p>
+            <ul>
+                <li><strong>Doğrudan Sizden Toplanan Veriler:</strong> Hesap oluşturma, profil oluşturma, iş ilanı yayınlama, iş başvurusu yapma, iletişim formlarını doldurma gibi doğrudan sizin sağladığınız veriler.</li>
+                <li><strong>Uygulama Kullanımınız Sırasında Otomatik Olarak Toplanan Veriler:</strong> Uygulamayı kullandığınızda cihazınızdan ve sunucularımızdan otomatik olarak toplanan kullanım verileri ve cihaz bilgileri. (Çerezler, benzeri teknolojiler aracılığıyla toplanan veriler - detaylı çerez politikası ayrıca sunulabilir).</li>
+                <li><strong>Üçüncü Taraflardan Toplanan Veriler (Sınırlı Durumlarda):</strong> Sosyal medya hesapları ile giriş yapma seçeneği sunuluyorsa, bu platformlardan izin verdiğiniz ölçüde profil bilgileri (izin alınarak). Ödeme işlemleri için üçüncü taraf ödeme hizmet sağlayıcıları aracılığıyla toplanan ödeme bilgileri (doğrudan bizde saklanmaz).</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>4. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri</h2>
+            <p>Kişisel verilerinizi aşağıdaki amaçlarla ve hukuki sebeplere dayanarak işliyoruz:</p>
+            <ol>
+                <li><strong>Hizmet Sunumu ve Uygulama İşlevselliği:</strong>
+                    <ul>
+                        <li>Hesap oluşturma ve yönetme.</li>
+                        <li>Profil oluşturma ve görüntüleme.</li>
+                        <li>İş ilanlarını yayınlama ve görüntüleme.</li>
+                        <li>Konum bazlı iş ilanlarını listeleme.</li>
+                        <li>İş başvurularını yönetme ve iletme.</li>
+                        <li>Kullanıcılar arası iletişimi sağlama.</li>
+                        <li>Uygulamanın temel fonksiyonlarını ve özelliklerini sağlama.</li>
+                        <li>Hukuki Sebep: Sözleşmenin ifası (Kullanıcı Sözleşmesi).</li>
+                    </ul>
+                </li>
+                <li><strong>Kullanıcı Deneyimi ve Uygulama Geliştirme:</strong>
+                    <ul>
+                        <li>Uygulama kullanımını analiz ederek kullanıcı deneyimini iyileştirme.</li>
+                        <li>Uygulama özelliklerini geliştirme ve yeni özellikler ekleme.</li>
+                        <li>Hata ayıklama ve teknik sorunları çözme.</li>
+                        <li>Hukuki Sebep: Meşru menfaat (Uygulamayı geliştirme ve kullanıcı deneyimini iyileştirme).</li>
+                    </ul>
+                </li>
+                <li><strong>İletişim ve Kullanıcı Desteği:</strong>
+                    <ul>
+                        <li>Kullanıcı sorularını ve taleplerini yanıtlama.</li>
+                        <li>Teknik destek sağlama.</li>
+                        <li>Uygulama ile ilgili bilgilendirme mesajları gönderme (hizmet güncellemeleri, güvenlik uyarıları vb.).</li>
+                        <li>Hukuki Sebep: Meşru menfaat (Kullanıcı desteği sağlama ve iletişim).</li>
+                    </ul>
+                </li>
+                <li><strong>Pazarlama İletişimleri (İzninizle):</strong>
+                    <ul>
+                        <li>Kampanyalar, promosyonlar ve yeni özellikler hakkında bilgilendirme (izin alınarak).</li>
+                        <li>Hukuki Sebep: Açık rıza (Pazarlama iletişimleri için).</li>
+                    </ul>
+                </li>
+                <li><strong>Yasal Yükümlülükler ve Güvenlik:</strong>
+                    <ul>
+                        <li>Yasal düzenlemelere uyum.</li>
+                        <li>Yetkili kurum ve kuruluşlardan gelen talepleri karşılama.</li>
+                        <li>Uygulamanın ve kullanıcıların güvenliğini sağlama, kötüye kullanımı önleme.</li>
+                        <li>Hukuki Sebep: Hukuki yükümlülük ve meşru menfaat (Güvenlik ve yasal uyumluluk).</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section class="section">
+            <h2>5. Kişisel Verilerin Paylaşılması</h2>
+            <p>Kişisel verilerinizi aşağıdaki kategorilerdeki alıcılarla paylaşabiliriz:</p>
+            <ul>
+                <li><strong>Hizmet Sağlayıcıları:</strong> Uygulamanın işletilmesi ve hizmetlerin sunulması için destek aldığımız üçüncü taraf hizmet sağlayıcıları (sunucu hizmetleri, veri analizi, ödeme işleme, müşteri destek hizmetleri vb.). Bu hizmet sağlayıcıları ile veri işleme sözleşmeleri yaparak veri güvenliğini sağlamaktayız.</li>
+                <li><strong>İş Ortakları (Sınırlı Durumlarda):</strong> Ortak kampanyalar veya özellikler sunulması durumunda, iş ortaklarımızla (izin alınarak).</li>
+                <li><strong>Yasal Merciler:</strong> Yasal yükümlülüklerimiz gereği yetkili kamu kurum ve kuruluşları ile (mahkemeler, kolluk kuvvetleri vb.).</li>
+                <li><strong>Kullanıcılar Arası Paylaşım:</strong> İş arayanların profilleri işverenlerle, işverenlerin ilanları iş arayanlarla paylaşılır (Uygulamanın doğası gereği). Kullanıcılar arasındaki mesajlaşmalar ilgili taraflarla paylaşılır.</li>
+                <li><strong>Şirket Birleşmeleri ve Devralmaları Durumunda:</strong> Şirketimizin birleşmesi, devralınması veya varlıklarının satılması durumunda, kişisel veriler ilgili alıcıya aktarılabilir.</li>
+            </ul>
+            <p>Kişisel verilerinizi yurt dışına aktarmamız gerekmesi durumunda, KVKK'da belirtilen gerekli önlemleri alarak ve yasal düzenlemelere uygun olarak aktarım gerçekleştireceğiz.</p>
+        </section>
+
+        <section class="section">
+            <h2>6. Kişisel Verilerin Saklanma Süreleri</h2>
+            <p>Kişisel verilerinizi, işleme amaçları doğrultusunda ve ilgili mevzuatta belirtilen süreler boyunca saklamaktayız. İşleme amacının ortadan kalkması veya yasal saklama süresinin sona ermesi halinde, kişisel verileriniz silinir, yok edilir veya anonim hale getirilir.</p>
+            <p>Genel olarak, kişisel verilerinizi aşağıdaki sürelerle saklarız:</p>
+            <ul>
+                <li>Hesap bilgileri ve profil bilgileri: Hesap aktif olduğu sürece ve yasal zorunluluklar devam ettiği müddetçe. Hesap kapatıldıktan sonra belirli bir süre (örneğin, 1 yıl) daha saklanabilir (yasal süreçler, ihtilaflar vb. için).</li>
+                <li>Kullanım verileri: Genellikle anonimleştirilmiş olarak süresiz saklanabilir. Kişisel veri içeren kullanım verileri ise [Belirli Süre - Örn: 2 yıl] süreyle saklanabilir (analiz ve geliştirme amaçları için).</li>
+                <li>İletişim kayıtları: İlgili iletişimin amacına ve yasal sürelere göre değişmekle birlikte, [Belirli Süre - Örn: 2 yıl] süreyle saklanabilir.</li>
+                <li>Pazarlama iletişim izinleri: İzin geri çekilene kadar.</li>
+                <li>Ödeme bilgileri (varsa): Yasal saklama süreleri ve muhasebe gereklilikleri doğrultusunda.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>7. Kişisel Veri Güvenliği</h2>
+            <p>Kişisel verilerinizin güvenliğini sağlamak için gerekli teknik ve organizasyonel önlemleri almaktayız. Bu önlemler şunları içerebilir:</p>
+            <ul>
+                <li>Veri şifreleme (iletim ve depolama sırasında).</li>
+                <li>Erişim kontrolleri ve yetkilendirme sistemleri.</li>
+                <li>Güvenlik duvarları ve kötü amaçlı yazılım koruması.</li>
+                <li>Düzenli güvenlik denetimleri ve risk analizleri.</li>
+                <li>Çalışanların veri güvenliği konusunda eğitilmesi ve farkındalık oluşturulması.</li>
+            </ul>
+            <p>Veri güvenliği için azami özeni göstermemize rağmen, internet üzerinden veri iletiminin veya elektronik depolamanın %100 güvenli olduğunu garanti edemeyiz. Veri ihlali durumunda, ilgili mevzuat gereğince gerekli bildirimleri yapacağız.</p>
+        </section>
+
+        <section class="section">
+            <h2>8. Kullanıcı Hakları (KVKK Madde 11)</h2>
+            <p>KVKK Madde 11 uyarınca aşağıdaki haklara sahipsiniz:</p>
+            <ul>
+                <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme.</li>
+                <li>Kişisel verileriniz işlenmişse buna ilişkin bilgi talep etme.</li>
+                <li>Kişisel verilerinizin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme.</li>
+                <li>Yurt içinde veya yurt dışında kişisel verilerinizin aktarıldığı üçüncü kişileri bilme.</li>
+                <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme.</li>
+                <li>KVKK'nın 7. maddesinde öngörülen şartlar çerçevesinde kişisel verilerinizin silinmesini veya yok edilmesini isteme.</li>
+                <li>(e) ve (f) bentleri uyarınca yapılan işlemlerin kişisel verilerinizin aktarıldığı üçüncü kişilere bildirilmesini isteme.</li>
+                <li>İşlenen verilerinizin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme.</li>
+                <li>Kişisel verilerinizin kanuna aykırı olarak işlenmesi sebebiyle zarara uğramanız hâlinde zararınızın giderilmesini talep etme.</li>
+            </ul>
+            <p>Bu haklarınızı kullanmak için lütfen [Veri Koruma İletişim E-postası] adresine veya [Posta Adresi] adresine yazılı olarak başvurunuz. Başvurularınız en kısa sürede ve en geç 30 gün içinde değerlendirilerek tarafınıza bilgi verilecektir.</p>
+        </section>
+
+        <section class="section">
+            <h2>9. Çerezler ve Benzeri Teknolojiler</h2>
+            <p>Uygulamamızda çerezler ve benzeri teknolojiler (örneğin, yerel depolama, piksel etiketleri) kullanılabilir. Bu teknolojiler, kullanıcı deneyimini iyileştirmek, uygulama kullanımını analiz etmek ve kişiselleştirilmiş içerik sunmak gibi amaçlarla kullanılabilir. Çerez kullanımı hakkında detaylı bilgi için lütfen [Çerez Politikası Bağlantısı - Eğer varsa ayrı bir çerez politikası belgesi oluşturulacaksa buraya link verilebilir veya bu politika içinde ayrı bir bölüm olarak eklenebilir]. Tarayıcı ayarlarınızı değiştirerek çerezleri kontrol edebilir veya devre dışı bırakabilirsiniz. Ancak, çerezleri devre dışı bırakmanız Uygulamanın bazı fonksiyonlarının düzgün çalışmamasına neden olabilir.</p>
+        </section>
+
+        <section class="section">
+            <h2>10. Diğer Web Sitelerine ve Uygulamalara Bağlantılar</h2>
+            <p>Uygulamamızda, üçüncü taraf web sitelerine veya uygulamalara bağlantılar bulunabilir. Bu bağlantılar aracılığıyla ziyaret ettiğiniz web sitelerinin veya uygulamaların gizlilik uygulamalarından sorumlu değiliz. Bu nedenle, ziyaret ettiğiniz diğer web sitelerinin ve uygulamaların gizlilik politikalarını incelemenizi öneririz.</p>
+        </section>
+
+        <section class="section">
+            <h2>11. Gizlilik Politikasında Değişiklikler</h2>
+            <p>Bu Gizlilik Politikası zaman zaman güncellenebilir. Güncellenmiş politika Uygulamada yayınlandığı tarihten itibaren geçerli olacaktır. Önemli değişiklikler olması durumunda, sizi Uygulama üzerinden veya e-posta yoluyla bilgilendirebiliriz. Gizlilik Politikası'ndaki değişiklikleri düzenli olarak kontrol etmeniz önemlidir.</p>
+        </section>
+
+        <section class="section">
+            <h2>12. İletişim</h2>
+            <p>Bu Gizlilik Politikası veya kişisel verilerinizin işlenmesi ile ilgili herhangi bir sorunuz veya endişeniz varsa, lütfen [Veri Koruma İletişim E-postası] veya [Posta Adresi] üzerinden bizimle iletişime geçin.</p>
+        </section>
+
+        <footer class="footer">
+            <p><strong>Günübirlik Uygulaması</strong></p>
+            <p>[Şirket Adı (Varsa)]</p>
+            <p>[Adres]</p>
+            <p>[Veri Koruma İletişim E-postası]</p>
+            <p>[Web Sitesi (Varsa)]</p>
+            <p>Son Güncelleme Tarihi: [Güncelleme Tarihi]</p>
+        </footer>
+
+        <div class="important-note">
+            <strong>Önemli Notlar:</strong>
+            <ul>
+                <li>Bu taslak gizlilik politikası genel bir çerçevedir. Uygulamanızın özel ihtiyaçlarına ve yasal gerekliliklere (özellikle KVKK ve ilgili mevzuat) göre bir avukat tarafından gözden geçirilmesi ve uyarlanması **kesinlikle** önemlidir.</li>
+                <li>Yerel yasal düzenlemeleri dikkate alarak, gizlilik politikasını düzenli olarak güncel tutmanız gerekmektedir.</li>
+                <li>Gizlilik politikasını Uygulama içinde kolayca erişilebilir bir yere (örneğin, "Ayarlar" veya "Hakkında" bölümü) yerleştirmeniz ve kullanıcıların kayıt sırasında gizlilik politikasını kabul etmelerini sağlamanız önemlidir.</li>
+                <li>[Şirket Adı (Varsa)] , [Şirket Adresi], [Veri Koruma İletişim E-postası], [Web Sitesi (Varsa)], [Güncelleme Tarihi], [Çerez Politikası Bağlantısı], [Posta Adresi], ve [Belirli Süre - Örn: 2 yıl] gibi yerleri kendi bilgilerinizle güncelleyin ve parantez içindeki açıklamaları kaldırın.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showPolicy(policyType) {
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            switch(policyType) {
+                case 'user':
+                    window.location.href = 'user_policy.html';
+                    break;
+                case 'privacy':
+                    window.location.href = 'privacy_policy.html';
+                    break;
+                case 'distance':
+                    window.location.href = 'distance_sales_contract.html';
+                    break;
+            }
+            
+            event.target.closest('.nav-button').classList.add('active');
+        }
+
+        // URL'den aktif politikayı belirle
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const buttons = document.querySelectorAll('.nav-button');
+            
+            buttons.forEach(btn => {
+                if (currentPath.includes('user_policy') && btn.textContent.includes('Kullanıcı')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('privacy_policy') && btn.textContent.includes('Gizlilik')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('distance_sales') && btn.textContent.includes('Mesafeli')) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

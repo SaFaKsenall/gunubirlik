@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sayfa Bulunamadı - 404</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- CSS Stilleri - İleride ayrı bir CSS dosyasına taşınabilir -->
+    <style>
+        /**************************************************
+         * GENEL STILLER
+         * Temel sayfa stilleri ve genel düzen
+         * İleride error-pages.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /**************************************************
+         * HATA KART STILLER
+         * Hata mesajı kartı stilleri
+         * İleride error-card.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .error-icon {
+            font-size: 80px;
+            color: #f44336;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .error-code {
+            font-size: 72px;
+            font-weight: 700;
+            color: #f44336;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        /**************************************************
+         * ARAMA KUTUSU STILLER
+         * Arama kutusu stilleri
+         * İleride search-box.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .search-container {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border-radius: 50px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input:focus {
+            border-color: #764ba2;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+
+        /**************************************************
+         * BUTON STILLER
+         * Buton stilleri
+         * İleride buttons.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a71d5 0%, #6a4292 100%);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(118, 75, 162, 0.1);
+        }
+
+        /**************************************************
+         * ÖNERILEN LINKLER STILLER
+         * Önerilen linkler bölümü stilleri
+         * İleride suggested-links.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .suggested-links {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .suggested-links h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .link-item {
+            background: rgba(118, 75, 162, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            color: #764ba2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .link-item:hover {
+            background: rgba(118, 75, 162, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /**************************************************
+         * ANIMASYON STILLER
+         * Animasyon stilleri
+         * İleride animations.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        .element-1 {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-duration: 20s;
+            animation-delay: 0s;
+        }
+
+        .element-2 {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 15%;
+            animation-duration: 25s;
+            animation-delay: 2s;
+        }
+
+        .element-3 {
+            width: 40px;
+            height: 40px;
+            bottom: 15%;
+            left: 20%;
+            animation-duration: 18s;
+            animation-delay: 1s;
+        }
+
+        .element-4 {
+            width: 50px;
+            height: 50px;
+            bottom: 10%;
+            right: 10%;
+            animation-duration: 22s;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 50px) rotate(90deg); }
+            50% { transform: translate(50px, 100px) rotate(180deg); }
+            75% { transform: translate(-50px, 50px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /**************************************************
+         * RESPONSIVE STILLER
+         * Farklı ekran boyutları için responsive tasarım stilleri
+         * İleride responsive.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .error-code {
+                font-size: 60px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .error-message {
+                font-size: 16px;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 48px;
+            }
+
+            .error-icon {
+                font-size: 60px;
+            }
+
+            .links-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 
+    ************************************************
+    * HATA MESAJI KART BÖLÜMÜ
+    * Bu bölüm, 404 hata mesajını içeren kartı içerir
+    * İleride error-card.html olarak ayrı bir dosyaya taşınabilir
+    ************************************************
+    -->
+    <div class="container">
+        <!-- Animasyon Elementleri -->
+        <div class="floating-elements">
+            <div class="floating-element element-1"></div>
+            <div class="floating-element element-2"></div>
+            <div class="floating-element element-3"></div>
+            <div class="floating-element element-4"></div>
+        </div>
+
+        <div class="error-icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Sayfa Bulunamadı</h2>
+        <p class="error-message">
+            Aradığınız sayfa bulunamadı. Sayfa kaldırılmış, adı değiştirilmiş veya geçici olarak kullanılamıyor olabilir.
+        </p>
+
+        <!-- Arama Kutusu -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Ne aramıştınız? Buradan arayabilirsiniz..." id="searchInput">
+        </div>
+
+        <!-- Butonlar -->
+        <div class="buttons-container">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i> Ana Sayfa
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Geri Dön
+            </a>
+        </div>
+
+        <!-- Önerilen Linkler -->
+        <div class="suggested-links">
+            <h3>Popüler Sayfalar</h3>
+            <div class="links-grid">
+                <a href="/explore" class="link-item">Keşfet</a>
+                <a href="/register" class="link-item">Kayıt Ol</a>
+                <a href="/login" class="link-item">Giriş Yap</a>
+                <a href="/contact" class="link-item">İletişim</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+    ************************************************
+    * JAVASCRIPT BÖLÜMÜ
+    * Bu bölüm, sayfanın işlevselliğini sağlayan JavaScript kodlarını içerir
+    * İleride farklı JS dosyalarına bölünebilir
+    ************************************************
+    -->
+    <script>
+        /**************************************************
+         * HATA SAYFASI FONKSİYONLARI
+         * Bu bölüm, hata sayfası ile ilgili işlevleri içerir
+         * İleride error-page.js olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hata sayfasına gelinen URL'i logla
+            console.log('404 Hata Sayfası: Kullanıcı şu sayfaya erişmeye çalıştı:', window.location.href);
+            
+            // Arama işlevselliği
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const searchTerm = this.value.trim();
+                        if (searchTerm) {
+                            // Arama terimini ana sayfaya yönlendir
+                            window.location.href = `/?search=${encodeURIComponent(searchTerm)}`;
+                        }
+                    }
+                });
+            }
+
+            // Animasyon elementlerini dinamik olarak oluştur
+            createFloatingElements();
+        });
+
+        // Animasyon elementlerini oluştur
+        function createFloatingElements() {
+            const container = document.querySelector('.container');
+            const floatingElements = document.querySelector('.floating-elements');
+            
+            // Mevcut elementleri koru
+        }
+
+        // Sayfa yüklenme süresini ölç
+        const pageLoadStart = Date.now();
+        window.addEventListener('load', () => {
+            const loadTime = Date.now() - pageLoadStart;
+            console.log(`Sayfa yüklenme süresi: ${loadTime}ms`);
+        });
+    </script>
+  </body>
+</html>

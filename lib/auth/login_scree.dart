@@ -390,7 +390,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const ForgotPasswordPage(),
+                                    const RegisterPage(),
                               ),
                             );
                           },
@@ -403,7 +403,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const RegisterPage(),
+                                builder: (context) => const ForgotPasswordPage(),
                               ),
                             );
                           },

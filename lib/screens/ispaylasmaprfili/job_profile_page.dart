@@ -15,6 +15,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:share_plus/share_plus.dart';
 
+// Import services
+import 'package:myapp/services/job_service.dart';
+import 'package:myapp/services/review_service.dart';
+import 'package:myapp/services/location_service.dart';
+import 'package:myapp/services/share_service.dart';
+import 'package:myapp/screens/ispaylasmaprfili/components/job_profile_components.dart';
 
 class JobProfilePage extends StatefulWidget {
   final UserModel user;
@@ -27,7 +33,7 @@ class JobProfilePage extends StatefulWidget {
   // Static method to navigate to this page with preloaded data
   static Future<void> navigateWithPreloadedData(BuildContext context, UserModel user) async {
     // Start preloading data
-    _JobProfilePageState.preloadData(user.uid);
+    JobService.preloadData(user.uid);
     
     // Navigate to the page immediately
     Navigator.push(
@@ -47,6 +53,12 @@ class _JobProfilePageState extends State<JobProfilePage> {
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   final NetworkInfo _networkInfo = NetworkInfo();
 
+  // Services
+  final JobService _jobService = JobService();
+  final ReviewService _reviewService = ReviewService();
+  final LocationService _locationService = LocationService();
+  final ShareService _shareService = ShareService();
+
   List<Job> _jobs = [];
   List<Review> _reviews = [];
   double _averageRating = 0.0;
@@ -61,44 +73,6 @@ class _JobProfilePageState extends State<JobProfilePage> {
   late SharedPreferences _prefs;
   bool _hasLoadedCache = false;
   bool _showShimmer = false;
-
-  // Static method to preload data for a user
-  static Future<void> preloadData(String userId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      
-      // Fetch jobs
-      final jobSnapshot = await FirebaseFirestore.instance
-          .collection('jobs')
-          .where('employerId', isEqualTo: userId)
-          .get();
-      
-      final jobs = jobSnapshot.docs
-          .map((doc) => Job.fromFirestore(doc as DocumentSnapshot<Map<String, dynamic>>))
-          .toList();
-      
-      // Cache jobs
-      await prefs.setString('cached_jobs_$userId', 
-          json.encode(jobs.map((job) => job.toJson()).toList()));
-      
-      // Fetch reviews
-      final reviewSnapshot = await FirebaseFirestore.instance
-          .collection('reviews')
-          .where('employerId', isEqualTo: userId)
-          .get();
-      
-      final reviews = reviewSnapshot.docs
-          .map((doc) => Review.fromMap(doc.data()))
-          .toList();
-      
-      // Cache reviews
-      await prefs.setString('cached_reviews_$userId', 
-          json.encode(reviews.map((review) => review.toJson()).toList()));
-      
-    } catch (e) {
-      print('Veri ön yükleme hatası: $e');
-    }
-  }
 
   @override
   void initState() {
@@ -120,30 +94,55 @@ class _JobProfilePageState extends State<JobProfilePage> {
   
   Future<void> _loadCachedDataFirst() async {
     try {
+      print("Önbellek kontrolü başladı - Kullanıcı ID: ${widget.user.uid}");
       _prefs = await SharedPreferences.getInstance();
       
       // Load cached data first
       final cachedJobs = _prefs.getString('cached_jobs_${widget.user.uid}');
+      print("Önbellek kontrolü - Kullanıcı ID: ${widget.user.uid}");
+      
       if (cachedJobs != null) {
-        final List<dynamic> jobsList = json.decode(cachedJobs);
-        if (mounted) {
-          setState(() {
-            _jobs = jobsList.map((job) => Job.fromJson(job)).toList();
-            _hasLoadedCache = true;
-            _showShimmer = false;
-          });
+        print("Önbellekte iş ilanları bulundu");
+        try {
+          final List<dynamic> jobsList = json.decode(cachedJobs);
+          print("Önbellekteki iş ilanı sayısı: ${jobsList.length}");
+          
+          if (mounted) {
+            setState(() {
+              _jobs = jobsList.map((job) => Job.fromJson(job)).toList();
+              _hasLoadedCache = true;
+              _showShimmer = false;
+            });
+            
+            // Debug bilgisi
+            for (var job in _jobs) {
+              print("Önbellekten yüklenen iş - ID: ${job.id}, İş Adı: ${job.jobName}");
+            }
+          }
+        } catch (e) {
+          print("Önbellekten iş ilanları yüklenirken hata: $e");
         }
+      } else {
+        print("Önbellekte iş ilanı bulunamadı");
       }
 
       final cachedReviews = _prefs.getString('cached_reviews_${widget.user.uid}');
       if (cachedReviews != null) {
-        final List<dynamic> reviewsList = json.decode(cachedReviews);
-        if (mounted) {
-          setState(() {
-            _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
-            _calculateAverageRating();
-          });
+        try {
+          final List<dynamic> reviewsList = json.decode(cachedReviews);
+          print("Önbellekteki değerlendirme sayısı: ${reviewsList.length}");
+          
+          if (mounted) {
+            setState(() {
+              _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
+              _calculateAverageRating();
+            });
+          }
+        } catch (e) {
+          print("Önbellekten değerlendirmeler yüklenirken hata: $e");
         }
+      } else {
+        print("Önbellekte değerlendirme bulunamadı");
       }
       
       // Then fetch fresh data from Firebase in the background
@@ -155,6 +154,9 @@ class _JobProfilePageState extends State<JobProfilePage> {
           _isLoading = false;
         });
       }
+      
+      // Hata durumunda da Firebase'den veri çekmeyi dene
+      _fetchData();
     }
   }
 
@@ -162,10 +164,21 @@ class _JobProfilePageState extends State<JobProfilePage> {
     if (!mounted) return;
     
     try {
-      final jobs = await _fetchJobs();
-      final reviews = await _fetchReviews();
+      print("Veriler yükleniyor... Kullanıcı ID: ${widget.user.uid}");
+      final jobs = await _jobService.fetchJobs(widget.user.uid);
+      final reviews = await _reviewService.fetchReviews(widget.user.uid);
 
       if (!mounted) return;
+
+      // Debug bilgisi
+      if (jobs != null) {
+        print("Yüklenen iş ilanı sayısı: ${jobs.length}");
+        for (var job in jobs) {
+          print("İş ID: ${job.id}, İş Adı: ${job.jobName}");
+        }
+      } else {
+        print("Yüklenen iş ilanı yok veya null");
+      }
 
       setState(() {
         if (jobs != null) {
@@ -198,41 +211,6 @@ class _JobProfilePageState extends State<JobProfilePage> {
     }
   }
 
-  Future<List<Job>?> _fetchJobs() async {
-    try {
-      final jobSnapshot = await FirebaseFirestore.instance
-          .collection('jobs')
-          .where('employerId', isEqualTo: widget.user.uid)
-          .get();
-
-      return jobSnapshot.docs
-          .map((doc) =>
-              Job.fromFirestore(doc as DocumentSnapshot<Map<String, dynamic>>))
-          .toList();
-    } catch (e) {
-      print('İş verileri çekme hatası: $e');
-      return null;
-    }
-  }
-
-  Future<List<Review>?> _fetchReviews() async {
-    try {
-      final reviewSnapshot = await FirebaseFirestore.instance
-          .collection('reviews')
-          .where('employerId', isEqualTo: widget.user.uid)
-          .get();
-
-      return reviewSnapshot.docs
-          .map((doc) => Review.fromMap(doc.data()))
-          .toList();
-    } catch (e) {
-      print('Değerlendirme verileri çekme hatası: $e');
-      return null;
-    }
-  }
-
-
-
   void _filterCategories(String query) {
     setState(() {
       _filteredCategories = _categories
@@ -240,143 +218,8 @@ class _JobProfilePageState extends State<JobProfilePage> {
               category.toLowerCase().contains(query.toLowerCase()))
           .take(3)
           .toList();
+      _isCategoryListVisible = query.isNotEmpty;
     });
-  }
-
-  Future<Map<String, dynamic>?> _getLocationForJob() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Konum izni reddedildi');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('Konum izni kalıcı olarak reddedildi');
-      }
-
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('Konum servisleri kapalı');
-      }
-
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-          // ignore: deprecated_member_use
-          desiredAccuracy: LocationAccuracy.reduced,
-          // ignore: deprecated_member_use
-          timeLimit: const Duration(seconds: 10),
-        );
-
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          position.latitude,
-          position.longitude,
-        );
-
-        String neighborhood = 'Bilinmeyen Mahalle';
-        if (placemarks.isNotEmpty) {
-          // Debug print to see what values we're getting
-          print('Raw placemark data: ${placemarks.first.toJson()}');
-          
-          // Mahalle bilgisini daha doğru almak için tüm olası alanları kontrol ediyoruz
-          // Explicitly convert any numeric values to strings to avoid type issues
-          String? subLocality = placemarks.first.subLocality;
-          String? subAdministrativeArea = placemarks.first.subAdministrativeArea;
-          String? locality = placemarks.first.locality;
-          String? administrativeArea = placemarks.first.administrativeArea;
-          
-          // Ensure all values are strings
-          // ignore: unnecessary_type_check
-          if (subLocality != null && subLocality is! String) {
-            subLocality = subLocality.toString();
-          }
-          // ignore: unnecessary_type_check
-          if (subAdministrativeArea != null && subAdministrativeArea is! String) {
-            subAdministrativeArea = subAdministrativeArea.toString();
-          }
-          // ignore: unnecessary_type_check
-          if (locality != null && locality is! String) {
-            locality = locality.toString();
-          }
-          // ignore: unnecessary_type_check
-          if (administrativeArea != null && administrativeArea is! String) {
-            administrativeArea = administrativeArea.toString();
-          }
-          
-          neighborhood = subLocality ?? // Mahalle
-              subAdministrativeArea ?? // İlçe
-              locality ?? // Şehir
-              administrativeArea ?? // Bölge
-              'Bilinmeyen Mahalle';
-          
-          print('Konum bilgileri: Mahalle=$subLocality, ' +
-                'İlçe=$subAdministrativeArea, ' +
-                'Şehir=$locality, ' +
-                'Bölge=$administrativeArea, ' +
-                'Seçilen=$neighborhood');
-        }
-
-        Map<String, dynamic> locationData = {
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-          'timestamp': ServerValue.timestamp,
-          'neighborhood': neighborhood,
-          'accuracy': 'gps',
-          'accuracyMeters': position.accuracy
-        };
-
-        return locationData;
-      } catch (e) {
-        print('GPS konum hatası: $e');
-        String? wifiName = await _networkInfo.getWifiName();
-        String? wifiBSSID = await _networkInfo.getWifiBSSID();
-
-        if (wifiName != null && wifiBSSID != null) {
-          // WiFi üzerinden konum tahmini yapmaya çalışalım
-          try {
-            // WiFi konum veritabanı kullanarak konum tahmini yapılabilir
-            // Burada basit bir çözüm olarak WiFi adını kullanıyoruz
-            String wifiLocation = wifiName.replaceAll('"', '');
-            
-            Map<String, dynamic> locationData = {
-              'timestamp': ServerValue.timestamp,
-              'wifiName': wifiName,
-              'wifiBSSID': wifiBSSID,
-              'accuracy': 'wifi',
-              'neighborhood': wifiLocation
-            };
-
-            return locationData;
-          } catch (wifiError) {
-            print('WiFi konum hatası: $wifiError');
-            Map<String, dynamic> locationData = {
-              'timestamp': ServerValue.timestamp,
-              'wifiName': wifiName,
-              'wifiBSSID': wifiBSSID,
-              'accuracy': 'wifi',
-              'neighborhood': 'WiFi Bölgesi'
-            };
-
-            return locationData;
-          }
-        }
-
-        throw Exception('Konum alınamadı');
-      }
-    } catch (e) {
-      print('Konum alma hatası: $e');
-      rethrow;
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   void _addJob() async {
@@ -390,11 +233,12 @@ class _JobProfilePageState extends State<JobProfilePage> {
       return;
     }
 
-    try {
+    // İşlem başladığında loading durumunu güncelle
       setState(() {
         _isLoading = true;
       });
 
+    try {
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.user.uid)
@@ -402,84 +246,87 @@ class _JobProfilePageState extends State<JobProfilePage> {
 
       String username = userSnapshot['username'] ?? 'Bilinmeyen Kullanıcı';
 
-      DocumentReference jobRef =
-          FirebaseFirestore.instance.collection('jobs').doc();
-      String jobId = jobRef.id;
-
-      Map<String, dynamic> jobData = Job(
-        id: jobId,
-        jobName: _jobNameController.text,
-        jobDescription: _jobDescriptionController.text,
-        jobPrice: double.parse(_jobPriceController.text),
-        employerId: widget.user.uid,
-        username: username,
-        category: _categoryController.text,
-        hasLocation: _shareLocation,
-      ).toMap();
-
+      Map<String, dynamic>? locationData;
       if (_shareLocation) {
         try {
-          Map<String, dynamic>? locationData = await _getLocationForJob();
-
-          if (locationData != null) {
-            await _database.child('job_locations').child(jobId).set({
-              'latitude': locationData['latitude'],
-              'longitude': locationData['longitude'],
-              'timestamp': ServerValue.timestamp,
-              'neighborhood': locationData['neighborhood'],
-              'accuracy': locationData['accuracy'],
-              'accuracyMeters': locationData['accuracyMeters']
-            });
-
-            // Ensure neighborhood is saved as a string
-            if (locationData['neighborhood'] != null) {
-              jobData['neighborhood'] = locationData['neighborhood'].toString();
-            }
-            jobData['hasLocation'] = true; // Explicitly use boolean true instead of 1
-          }
+          // Location permission should already be granted at this point
+          locationData = await _locationService.getLocationForJob();
         } catch (e) {
-          print('Konum kaydetme hatası: $e');
-          jobData['hasLocation'] = false; // Explicitly use boolean false instead of 0
+          print('Konum alma hatası: $e');
+          // Show an error message but continue without location
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Konum alınamadı: $e')),
+            );
+          }
         }
       }
 
-      await jobRef.set(jobData);
+      // Parse job price
+      double jobPrice = double.parse(_jobPriceController.text);
 
-      // Debug print to verify what was saved
-      print('Job saved with data: ${jobData.toString()}');
-      print('Neighborhood value saved: ${jobData['neighborhood']}');
-      print('hasLocation value saved: ${jobData['hasLocation']}');
-
-      _jobNameController.clear();
-      _jobDescriptionController.clear();
-      _jobPriceController.clear();
-      _categoryController.clear();
-      setState(() {
-        _shareLocation = false;
-      });
-
-      await _fetchData();
-      Navigator.pop(context);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('İş başarıyla eklendi')),
+      // Call the job service to add the job
+      Map<String, dynamic> result = await _jobService.addJob(
+        jobName: _jobNameController.text,
+        jobDescription: _jobDescriptionController.text,
+        jobPrice: jobPrice,
+        employerId: widget.user.uid,
+        username: username,
+        category: _categoryController.text,
+        hasLocation: _shareLocation && locationData != null,
+        locationData: locationData,
       );
-    } catch (e) {
-      print('İş ekleme hatası: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('İş eklenirken hata oluştu: ${e.toString()}')),
-      );
-    } finally {
+
+      // İşlem tamamlandığında loading durumunu güncelle
       setState(() {
         _isLoading = false;
       });
+
+      if (result['success']) {
+        // Job added successfully
+        _jobNameController.clear();
+        _jobDescriptionController.clear();
+        _jobPriceController.clear();
+        _categoryController.clear();
+        setState(() {
+          _shareLocation = false;
+        });
+
+        await _fetchData();
+        
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'])),
+        );
+      } else {
+        // Failed to add job
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('İş ekleme hatası: $e');
+      
+      // Hata durumunda loading durumunu güncelle
+      setState(() {
+        _isLoading = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('İş eklenirken hata oluştu: ${e.toString()}')),
+      );
     }
   }
 
   Future<void> _deleteJob(Job job) async {
     try {
-      await FirebaseFirestore.instance.collection('jobs').doc(job.id).delete();
+      bool success = await _jobService.deleteJob(job);
 
+      if (success) {
       List<Job> cachedJobs = _jobs.where((j) => j.id != job.id).toList();
       await _prefs.setString('cached_jobs_${widget.user.uid}',
           json.encode(cachedJobs.map((job) => job.toJson()).toList()));
@@ -492,6 +339,13 @@ class _JobProfilePageState extends State<JobProfilePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('İş ilanı başarıyla silindi')),
         );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('İş ilanı silinirken bir hata oluştu')),
+          );
+        }
       }
     } catch (e) {
       print('İş silme hatası: $e');
@@ -504,569 +358,119 @@ class _JobProfilePageState extends State<JobProfilePage> {
   }
 
   void _addReview() async {
-    if (FirebaseAuth.instance.currentUser!.uid == widget.user.uid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Kendi profilinize değerlendirme ekleyemezsiniz')),
-      );
-      return;
-    }
-
-    try {
-      QuerySnapshot existingReviewSnapshot = await FirebaseFirestore.instance
-          .collection('reviews')
-          .where('employerId', isEqualTo: widget.user.uid)
-          .where('reviewerId',
-              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
-
-      if (existingReviewSnapshot.docs.isNotEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Bu kullanıcıya zaten değerlendirme yaptınız')),
-          );
-        }
-        return;
-      }
-
-      double rating = 0;
-      final reviewController = TextEditingController();
-      bool isSubmitting = false;
-
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setModalState) {
-              return Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'İş Değerlendirmesi',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      RatingBar.builder(
-                        initialRating: rating,
-                        minRating: 1,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemPadding:
-                            const EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (newRating) {
-                          setModalState(() {
-                            rating = newRating;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: reviewController,
-                        decoration: const InputDecoration(
-                          labelText: 'Yorumunuz',
-                          border: OutlineInputBorder(),
-                          hintText: 'Deneyiminizi paylaşın...',
-                        ),
-                        maxLines: 3,
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: isSubmitting
-                              ? null
-                              : () async {
-                                  if (rating == 0) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Lütfen bir puan verin')),
-                                    );
-                                    return;
-                                  }
-                                  if (reviewController.text.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Lütfen bir yorum yazın')),
-                                    );
-                                    return;
-                                  }
-
-                                  setModalState(() {
-                                    isSubmitting = true;
-                                  });
-
-                                  try {
-                                    DocumentSnapshot currentUserDoc =
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
-                                            .get();
-
-                                    String reviewerUsername =
-                                        (currentUserDoc.data() as Map<String,
-                                                dynamic>)['username'] ??
-                                            'Anonim Kullanıcı';
-
-                                    await FirebaseFirestore.instance
-                                        .collection('reviews')
-                                        .add({
-                                      'employerId': widget.user.uid,
-                                      'reviewerId': FirebaseAuth
-                                          .instance.currentUser!.uid,
-                                      'reviewerUsername': reviewerUsername,
-                                      'rating': rating,
-                                      'comment': reviewController.text,
-                                      'createdAt': FieldValue.serverTimestamp(),
-                                    });
-
-                                    if (mounted) {
-                                      Navigator.pop(context);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Değerlendirmeniz başarıyla eklendi')),
-                                      );
-                                      _fetchData();
-                                    }
-                                  } catch (e) {
-                                    print('Değerlendirme ekleme hatası: $e');
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                'Değerlendirme eklenirken hata oluştu: $e')),
-                                      );
-                                    }
-                                  } finally {
-                                    setModalState(() {
-                                      isSubmitting = false;
-                                    });
-                                  }
-                                },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: Text(
-                            isSubmitting
-                                ? 'Gönderiliyor...'
-                                : 'Değerlendirmeyi Gönder',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-    } catch (e) {
-      print('Değerlendirme dialog hatası: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Bir hata oluştu: $e')),
-        );
-      }
-    }
+    await _reviewService.addReview(context, widget.user.uid);
+    // Refresh data after adding review
+    _fetchData();
   }
 
   void _calculateAverageRating() {
-    if (_reviews.isEmpty) {
-      setState(() {
-        _averageRating = 0.0;
-      });
-      return;
-    }
-
-    double totalRating = _reviews.fold(0, (sum, review) => sum + review.rating);
     setState(() {
-      _averageRating = totalRating / _reviews.length;
+      _averageRating = _reviewService.calculateAverageRating(_reviews);
     });
   }
 
   void _showAddJobBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Yeni İş İlanı',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: _jobNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'İş Adı',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.work),
-                      ),
-                      maxLength: 20,
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: _categoryController,
-                      focusNode: _categoryFocusNode,
-                      decoration: const InputDecoration(
-                          labelText: 'İş Katagorisi',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.category)),
-                      onChanged: (query) {
-                        _filterCategories(query);
-                        setModalState(() {
-                          _isCategoryListVisible = query.isNotEmpty;
-                        });
+    _jobService.showAddJobBottomSheet(
+      context,
+      jobNameController: _jobNameController,
+      jobDescriptionController: _jobDescriptionController,
+      jobPriceController: _jobPriceController,
+      categoryController: _categoryController,
+      categoryFocusNode: _categoryFocusNode,
+      scrollController: _scrollController,
+      filteredCategories: _filteredCategories,
+      isCategoryListVisible: _isCategoryListVisible,
+      shareLocation: _shareLocation,
+      isLoading: _isLoading,
+      filterCategories: _filterCategories,
+      addJob: _addJob,
+      onShareLocationChanged: (bool? newValue) async {
+        // Checkbox'ın durumunu hemen güncelle
+        bool newState = newValue ?? false;
+        
+        // Eğer checkbox işaretlendiyse konum izni kontrolü yap
+        if (newState) {
+          bool hasPermission = await _locationService.checkLocationPermission();
+          
+          if (!hasPermission) {
+            // Konum izni yoksa, kullanıcıya sor
+            if (context.mounted) {
+              bool? dialogResult = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Konum İzni Gerekli'),
+                  content: const Text(
+                    'İşinizi yakındaki kullanıcılara göstermek için konum izni gereklidir. '
+                    'Konum izni vermek istiyor musunuz?'
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, false);
                       },
-                      maxLength: 20,
+                      child: const Text('Hayır'),
                     ),
-                    if (_isCategoryListVisible)
-                      SizedBox(
-                        height: 60,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _filteredCategories.length,
-                          itemBuilder: (context, index) {
-                            String category = _filteredCategories[index];
-                            return GestureDetector(
-                              onTap: () {
-                                _categoryController.text = category;
-                                _isCategoryListVisible = false;
-                                _categoryFocusNode.unfocus();
-                                setModalState(() {});
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Chip(
-                                  label: Text(category),
-                                  backgroundColor: Colors.blue[100],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: _jobDescriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'İş Açıklaması',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.description),
-                      ),
-                      maxLines: 3,
-                      maxLength: 150,
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: _jobPriceController,
-                      decoration: const InputDecoration(
-                        labelText: 'İş Ücreti',
-                        border: OutlineInputBorder(),
-                        prefixText: '₺ ',
-                      ),
-                      maxLength: 6,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _shareLocation,
-                          onChanged: (bool? newValue) {
-                            setModalState(() {
-                              _shareLocation = newValue ?? false;
-                            });
-                          },
-                        ),
-                        const Expanded(
-                          child: Text(
-                            'Yakındaki kullanıcılara göster (Konumunuz paylaşılacak)',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _addJob,
-                      icon: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.add),
-                      label: Text(_isLoading ? 'Ekleniyor...' : 'İşi Kaydet'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        minimumSize: const Size(double.infinity, 45),
-                      ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      child: const Text('Evet'),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        );
+              );
+              
+              if (dialogResult == true) {
+                try {
+                  await _locationService.getLocationForJob();
+                  setState(() {
+                    _shareLocation = true;
+                  });
+                  return true;
+                } catch (e) {
+                  print('Konum izni hatası: $e');
+                  setState(() {
+                    _shareLocation = false;
+                  });
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Konum izni alınamadı: $e')),
+                    );
+                  }
+                  return false;
+                }
+              } else {
+                setState(() {
+                  _shareLocation = false;
+                });
+                return false;
+              }
+            }
+            return false;
+          } else {
+            setState(() {
+              _shareLocation = true;
+            });
+            return true;
+          }
+        } else {
+          setState(() {
+            _shareLocation = false;
+          });
+          return false;
+        }
       },
     );
   }
 
   void _showJobDetails(Job job) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.8,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          job.jobName,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.category, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          job.category,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.attach_money, color: Colors.green),
-                      Text(
-                        '${job.jobPrice.toStringAsFixed(2)} ₺',
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'İş Açıklaması:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    job.jobDescription,
-                    style: const TextStyle(height: 1.4),
-                  ),
-                  if (job.hasLocation) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.grey),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            job.neighborhood ?? 'Konum bilgisi yok',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  if (FirebaseAuth.instance.currentUser?.uid == widget.user.uid)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _shareJob(job);
-                          },
-                          icon: const Icon(Icons.share, color: Colors.blue),
-                          label: const Text(
-                            'İlanı Paylaş',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        TextButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _deleteJob(job);
-                          },
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          label: const Text(
-                            'İlanı Sil',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
-                  if (FirebaseAuth.instance.currentUser?.uid != widget.user.uid)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _shareJob(job);
-                          },
-                          icon: const Icon(Icons.share, color: Colors.blue),
-                          label: const Text(
-                            'İlanı Paylaş',
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+    _jobService.showJobDetails(
+      context, 
+      job, 
+      _deleteJob, 
+      (Job job) => _shareService.shareJob(job, widget.user.username),
+      isCurrentUser
     );
-  }
-
-  Widget _buildSkeletonCard() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        child: Card(
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 200,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 15,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: 100,
-                  height: 15,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Profil paylaşma fonksiyonu
-  void _shareProfile() {
-    final String profileUrl = "https://isapp.com/profile/${widget.user.username}"; // Kullanıcı adı ile URL
-    final String shareText = "${widget.user.username} adlı kullanıcının iş profilini incelemek için tıklayın: $profileUrl";
-    
-    Share.share(shareText, subject: "${widget.user.username} - İş Profili");
-  }
-  
-  // İş paylaşma fonksiyonu
-  void _shareJob(Job job) {
-    final String jobUrl = "https://isapp.com/job/${job.id}"; // İş ID'si
-    final String shareText = "Benim İşimi Yapmaya ne dersin?\n\n${job.jobName}\n\n${job.jobDescription}\n\nFiyat: ${job.jobPrice.toStringAsFixed(2)} ₺\n\nİş Veren: ${widget.user.username}\n\nDetaylar için: $jobUrl";
-    
-    Share.share(shareText, subject: "${job.jobName} - İş İlanı");
   }
 
   @override
@@ -1101,7 +505,7 @@ class _JobProfilePageState extends State<JobProfilePage> {
             IconButton(
               icon: const Icon(Icons.share),
               color: Colors.blue,
-              onPressed: _shareProfile,
+              onPressed: () => _shareService.shareProfile(widget.user),
             ),
          IconButton(
             icon: const Icon(Icons.qr_code_scanner),
@@ -1109,8 +513,8 @@ class _JobProfilePageState extends State<JobProfilePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => QRScannerapp(
-                    currentUser: FirebaseAuth.instance.currentUser!,
+                  builder: (context) => ConstructionPage(
+                    //currentUser: FirebaseAuth.instance.currentUser!,
                   ),
                 ),
               );
@@ -1122,7 +526,7 @@ class _JobProfilePageState extends State<JobProfilePage> {
       body: _showShimmer
           ? ListView.builder(
               itemCount: 3,
-              itemBuilder: (context, index) => _buildSkeletonCard(),
+              itemBuilder: (context, index) => JobProfileComponents.buildSkeletonCard(),
             )
           : RefreshIndicator(
               onRefresh: _fetchData,
@@ -1227,18 +631,32 @@ class _JobProfilePageState extends State<JobProfilePage> {
                                     ),
                                   IconButton(
                                       onPressed: () {
+                                        print("Paylaş butonuna tıklandı. İş listesi uzunluğu: ${_jobs.length}");
                                         if (_jobs.isNotEmpty) {
-                                          _shareJob(_jobs.first); // En son eklenen işi paylaş
+                                          // Debug bilgisi ekleyelim
+                                          print("Paylaşılacak iş: ${_jobs.first.jobName}, ID: ${_jobs.first.id}");
+                                          _shareService.shareJob(_jobs.first, widget.user.username);
                                         } else {
+                                          print("Paylaşılacak iş bulunamadı. Jobs listesi boş.");
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(content: Text('Paylaşılacak iş ilanı bulunamadı')),
                                           );
                                         }
                                       },
-                                      icon: Icon(Icons.share),
+                                      icon: const Icon(Icons.share),
                                       color: Colors.blue,
-                                      style: IconButton.styleFrom())
+                                      tooltip: 'İş İlanını Paylaş',
+                                    )
                                 ],
+                              ),
+                              const SizedBox(height: 10),
+                              // Debug bilgisi ekleyelim
+                              Text(
+                                "Toplam iş ilanı: ${_jobs.length}",
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
                               ),
                               const SizedBox(height: 10),
                               _jobs.isEmpty
@@ -1262,108 +680,10 @@ class _JobProfilePageState extends State<JobProfilePage> {
                                         itemCount: _jobs.length,
                                         itemBuilder: (context, index) {
                                           Job job = _jobs[index];
-                                          final colors = [
-                                            Color(0xFFE3F2FD),
-                                            Color(0xFFF3E5F5),
-                                            Color(0xFFF1F8E9),
-                                            Color(0xFFFFF3E0),
-                                          ];
-                                          return GestureDetector(
-                                            onTap: () => _showJobDetails(job),
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8),
-                                              child: Card(
-                                                elevation: 3,
-                                                color: colors[
-                                                    index % colors.length],
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(12),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              job.jobName,
-                                                              maxLines: 1,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            '${job.jobPrice.toStringAsFixed(2)} ₺',
-                                                            style:
-                                                                const TextStyle(
-                                                              color:
-                                                                  Colors.green,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(height: 4),
-                                                      Text(
-                                                        job.jobDescription,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                      if (job.hasLocation)
-                                                        Row(
-                                                          children: [
-                                                            const Icon(
-                                                                Icons
-                                                                    .location_on,
-                                                                size: 14,
-                                                                color: Colors
-                                                                    .grey),
-                                                            const SizedBox(
-                                                                width: 4),
-                                                            Expanded(
-                                                              child: Text(
-                                                                job.neighborhood ??
-                                                                    'Konum bilgisi yok',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  color: Colors
-                                                                      .grey,
-                                                                  fontSize: 12,
-                                                                ),
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                          return JobProfileComponents.buildJobCard(
+                                            job, 
+                                            index, 
+                                            _showJobDetails
                                           );
                                         },
                                       ),
@@ -1437,95 +757,7 @@ class _JobProfilePageState extends State<JobProfilePage> {
                                         itemCount: _reviews.length,
                                         itemBuilder: (context, index) {
                                           Review review = _reviews[index];
-                                          final colors = [
-                                            Color(0xFFFCE4EC),
-                                            Color(0xFFE8EAF6),
-                                            Color(0xFFE0F2F1),
-                                            Color(0xFFFFF8E1),
-                                          ];
-                                          return Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 8),
-                                            child: Card(
-                                              elevation: 3,
-                                              color:
-                                                  colors[index % colors.length],
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        const CircleAvatar(
-                                                          child: Icon(Icons
-                                                              .person_outline),
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 8),
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                review.reviewerUsername ??
-                                                                    'Anonim Kullanıcı',
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                              Row(
-                                                                children: List
-                                                                    .generate(
-                                                                  5,
-                                                                  (starIndex) =>
-                                                                      Icon(
-                                                                    starIndex <
-                                                                            review.rating
-                                                                                .round()
-                                                                        ? Icons
-                                                                            .star
-                                                                        : Icons
-                                                                            .star_border,
-                                                                    color: Colors
-                                                                        .amber,
-                                                                    size: 16,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Expanded(
-                                                      child: Text(
-                                                        review.comment,
-                                                        style: const TextStyle(
-                                                          color: Colors.black87,
-                                                        ),
-                                                        maxLines: 3,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
+                                          return JobProfileComponents.buildReviewCard(review, index);
                                         },
                                       ),
                                     ),

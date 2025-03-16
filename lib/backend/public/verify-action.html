@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doğrulama İşlemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/themes.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .verification-container {
+            max-width: 500px;
+            width: 90%;
+            padding: 2rem;
+        }
+
+        .verification-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .verification-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .verification-icon.success {
+            color: #28a745;
+        }
+
+        .verification-icon.error {
+            color: #dc3545;
+        }
+
+        .verification-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .verification-message {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .verification-code {
+            font-size: 2rem;
+            font-weight: bold;
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            color: #333;
+            letter-spacing: 5px;
+        }
+
+        .verification-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+
+        .verification-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        }
+
+        .timer {
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="verification-card" id="loadingCard">
+            <div class="verification-icon">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <h2 class="verification-title">İşleminiz Yükleniyor</h2>
+            <p class="verification-message">Lütfen bekleyin, doğrulama işleminiz gerçekleştiriliyor...</p>
+        </div>
+
+        <div class="verification-card" id="successCard" style="display: none;">
+            <div class="verification-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="verification-title">Doğrulama Başarılı</h2>
+            <p class="verification-message">Doğrulama kodunuz başarıyla alındı. Lütfen bu kodu uygulama içerisinde kullanın:</p>
+            <div class="verification-code" id="verificationCode">------</div>
+            <p class="verification-message">Bu sayfayı kapatabilir ve işleminize devam edebilirsiniz.</p>
+            <div class="timer">Bu sayfa <span id="countdown">30</span> saniye sonra otomatik olarak kapanacak.</div>
+        </div>
+
+        <div class="verification-card" id="errorCard" style="display: none;">
+            <div class="verification-icon error">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2 class="verification-title">Hata Oluştu</h2>
+            <p class="verification-message" id="errorMessage">Doğrulama işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.</p>
+            <a href="/sidebar_screens/settings.html" class="verification-button">
+                Ayarlara Dön
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, 
+            firestore,
+            checkActionCode,
+            applyActionCode,
+            doc,
+            getDoc,
+            updateDoc,
+            serverTimestamp
+        } from './assets/js/firebaseConfig.js';
+
+        // URL parametrelerini al
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const action = urlParams.get('action');
+        const email = urlParams.get('email');
+        const oobCode = urlParams.get('oobCode');
+
+        // DOM elementleri
+        const loadingCard = document.getElementById('loadingCard');
+        const successCard = document.getElementById('successCard');
+        const errorCard = document.getElementById('errorCard');
+        const verificationCode = document.getElementById('verificationCode');
+        const errorMessage = document.getElementById('errorMessage');
+        const countdownEl = document.getElementById('countdown');
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Firebase'in gönderdiği oobCode varsa
+                if (oobCode) {
+                    try {
+                        // Kodu doğrula
+                        const actionInfo = await checkActionCode(auth, oobCode);
+                        
+                        // Kodu uygula
+                        await applyActionCode(auth, oobCode);
+                        
+                        // Başarılı mesajı göster
+                        showSuccessCard('Firebase doğrulama işlemi başarılı. İşleminize devam edebilirsiniz.');
+                        
+                        // 5 saniye sonra ayarlar sayfasına yönlendir
+                        setTimeout(() => {
+                            window.location.href = '/sidebar_screens/settings.html';
+                        }, 5000);
+                    } catch (error) {
+                        console.error('Firebase doğrulama hatası:', error);
+                        showErrorCard('Firebase doğrulama işlemi başarısız oldu. Lütfen tekrar deneyin.');
+                    }
+                }
+                // Uygulama içi doğrulama kodu varsa
+                else if (code && action && email) {
+                    // Doğrulama kodunu göster
+                    verificationCode.textContent = code;
+                    
+                    // Başarılı mesajı göster
+                    showSuccessCard();
+                    
+                    // Geri sayım başlat
+                    startCountdown();
+                } else {
+                    // Hata mesajı göster
+                    showErrorCard('Geçersiz doğrulama bağlantısı. Lütfen tekrar deneyin.');
+                }
+            } catch (error) {
+                console.error('Doğrulama hatası:', error);
+                showErrorCard('Doğrulama işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+            }
+        });
+
+        // Başarılı kartı göster
+        function showSuccessCard(message) {
+            loadingCard.style.display = 'none';
+            errorCard.style.display = 'none';
+            successCard.style.display = 'block';
+            
+            if (message) {
+                document.querySelector('#successCard .verification-message').textContent = message;
+                verificationCode.style.display = 'none';
+            }
+        }
+
+        // Hata kartı göster
+        function showErrorCard(message) {
+            loadingCard.style.display = 'none';
+            successCard.style.display = 'none';
+            errorCard.style.display = 'block';
+            
+            if (message) {
+                errorMessage.textContent = message;
+            }
+        }
+
+        // Geri sayım başlat
+        function startCountdown() {
+            let seconds = 30;
+            
+            const timer = setInterval(() => {
+                countdownEl.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    window.close();
+                }
+                
+                seconds--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html> 

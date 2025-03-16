@@ -1,0 +1,142 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.welcome-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-title {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.welcome-text {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .welcome-card {
+        padding: 1.5rem;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Loading States */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--text-secondary);
+}
+
+.loading::after {
+    content: '';
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: loading 0.8s infinite linear;
+}
+
+@keyframes loading {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error States */
+.error {
+    background: var(--danger-light);
+    color: var(--danger);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+/* Success States */
+.success {
+    background: var(--success-light);
+    color: var(--success);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+/* Menu Toggle Button for Mobile */
+.menu-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    z-index: 1000;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+}
+
+.user-details {
+    display: grid;
+    gap: 1rem;
+}
+
+.detail-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1rem;
+}
+
+.detail-label {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #333;
+    font-size: 1.1rem;
+    word-break: break-word;
+}
+
+#settingsContent, #profileContent {
+    display: none;
+} 

@@ -1,0 +1,21 @@
+/* Yardımcı stiller */
+.bottom-text {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #666;
+}
+
+.link {
+    color: #764ba2;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.link:hover {
+    color: #667eea;
+} 

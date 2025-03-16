@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Günübirlik Uygulaması Politikaları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #764ba2;
+            --secondary-color: #667eea;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-primary: #fff;
+            --bg-secondary: #f8f8f8;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .policy-nav {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-buttons {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background-color: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 { 
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .important-note {
+            background: rgba(118, 75, 162, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="policy-nav">
+        <div class="nav-buttons">
+            <button class="nav-button active" onclick="showPolicy('user')">
+                <i class="fas fa-user-shield"></i> Kullanıcı Sözleşmesi
+            </button>
+            <button class="nav-button" onclick="showPolicy('privacy')">
+                <i class="fas fa-lock"></i> Gizlilik Politikası
+            </button>
+            <button class="nav-button" onclick="showPolicy('distance')">
+                <i class="fas fa-shopping-cart"></i> Mesafeli Satış
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Günübirlik Uygulaması Kullanıcı Sözleşmesi ve Politikası</h1>
+        </header>
+
+        <section class="section">
+            <h2>Giriş</h2>
+            <p>Bu Kullanıcı Sözleşmesi ve Politikası ("<strong>Sözleşme</strong>"), Günübirlik mobil uygulamasının ("<strong>Uygulama</strong>") kullanım şartlarını ve koşullarını düzenlemektedir. Uygulamayı kullanarak, bu Sözleşme'nin tüm hüküm ve koşullarını kabul etmiş sayılırsınız. Bu Sözleşme, sizinle Günübirlik Uygulaması ("<strong>Günübirlik</strong>", "<strong>biz</strong>", "<strong>bizim</strong>") arasında yasal bir anlaşma teşkil etmektedir. Lütfen bu Sözleşme'yi dikkatlice okuyunuz.</p>
+        </section>
+
+        <section class="section">
+            <h2>1. Tanımlar</h2>
+            <p>Bu Sözleşme'de geçen aşağıdaki terimler, aksi belirtilmedikçe aşağıdaki anlamlara gelecektir:</p>
+            <ul>
+                <li><strong>Uygulama:</strong> Günübirlik adlı mobil iş bulma ve iş verme platformu uygulaması.</li>
+                <li><strong>Kullanıcı:</strong> Uygulamayı kullanan ve hesap oluşturan gerçek veya tüzel kişiler (iş arayanlar ve işverenler).</li>
+                <li><strong>İş Arayan:</strong> Uygulama üzerinden iş arayan, profil oluşturan ve iş başvurusu yapan kullanıcılar.</li>
+                <li><strong>İşveren:</strong> Uygulama üzerinden iş ilanı yayınlayan, iş arayanlarla iletişime geçen ve iş teklifi sunan kullanıcılar.</li>
+                <li><strong>İçerik:</strong> Kullanıcılar tarafından Uygulamaya yüklenen, paylaşılan veya iletilen her türlü bilgi, metin, görsel, video, ses, ilan, profil bilgisi, yorum, değerlendirme ve diğer materyaller.</li>
+                <li><strong>Hizmet:</strong> Uygulamanın sunduğu iş bulma, iş verme, ilan yayınlama, profil oluşturma, konum bazlı iş arama, iletişim kurma ve diğer tüm fonksiyonlar.</li>
+                <li><strong>Hesap:</strong> Kullanıcının Uygulamaya erişmek ve Hizmetlerden yararlanmak için oluşturduğu kişisel hesap.</li>
+                <li><strong>Kişisel Veri:</strong> Kullanıcıya ait kimliği belirli veya belirlenebilir kılan her türlü bilgi (ad, soyad, iletişim bilgileri, konum bilgileri vb.).</li>
+                <li><strong>Fikri Mülkiyet Hakları:</strong> Uygulamaya, Uygulama içeriğine ve Uygulama tasarımına ilişkin tüm telif hakları, marka hakları, patent hakları, tasarım hakları ve diğer fikri mülkiyet hakları.</li>
+                <li><strong>Gizli Bilgi:</strong> Kullanıcılar arasında veya Kullanıcı ile Günübirlik arasında paylaşılan, kamuya açık olmayan ve gizli tutulması gereken her türlü bilgi.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>2. Kullanıcı Hesabı ve Kayıt</h2>
+            <section>
+                <h3>2.1. Hesap Oluşturma ve Uygunluk:</h3>
+                <ul>
+                    <li>Uygulamayı kullanmak için geçerli bir hesap oluşturmanız gerekmektedir.</li>
+                    <li>Hesap oluşturmak için yasal yaşta olmanız ve hukuki ehliyete sahip olmanız gerekmektedir.</li>
+                    <li>Tüzel kişiler adına hesap oluşturan kişilerin, tüzel kişiyi temsil etme yetkisine sahip olması gerekmektedir.</li>
+                    <li>Hesap oluştururken doğru, güncel ve eksiksiz bilgi sağlamanız gerekmektedir.</li>
+                    <li>Yanlış, eksik veya yanıltıcı bilgi sağlamanız durumunda, Günübirlik hesabınızı askıya alma veya kapatma hakkına sahiptir.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>2.2. Hesap Güvenliği:</h3>
+                <ul>
+                    <li>Hesap şifrenizi gizli tutmak ve üçüncü kişilerle paylaşmamak sizin sorumluluğunuzdadır.</li>
+                    <li>Hesabınızın yetkisiz kullanımından doğacak tüm zararlardan siz sorumlusunuz.</li>
+                    <li>Hesabınızın yetkisiz kullanıldığını fark ederseniz, derhal Günübirlik'e bildirmeniz gerekmektedir.</li>
+                    <li>Günübirlik, hesap güvenliğinizden sorumlu tutulamaz.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>2.3. Hesap Askıya Alma ve İptali:</h3>
+                <ul>
+                    <li>Günübirlik, herhangi bir zamanda ve herhangi bir nedenle (örneğin, bu Sözleşme'yi ihlal etmeniz, yasalara aykırı davranışlarınız, Uygulamanın kötüye kullanımı vb.) hesabınızı askıya alma veya iptal etme hakkına sahiptir.</li>
+                    <li>Hesabınızın askıya alınması veya iptal edilmesi durumunda, Hizmetlere erişiminiz engellenebilir ve Uygulama üzerindeki İçeriğiniz silinebilir.</li>
+                    <li>Hesabınızın iptali, bu Sözleşme kapsamındaki yükümlülüklerinizden ve sorumluluklarınızdan sizi kurtarmaz.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>3. Hizmet Kullanımı - İş Arayanlar</h2>
+            <section>
+                <h3>3.1. İş Arama ve Başvuru:</h3>
+                <ul>
+                    <li>İş Arayan olarak Uygulamayı kullanarak iş ilanlarını görüntüleyebilir, konum bazlı iş araması yapabilir ve işverenlerle iletişime geçebilirsiniz.</li>
+                    <li>İş ilanlarına başvurmak için Uygulama üzerinden başvuru yapabilirsiniz.</li>
+                    <li>Günübirlik, iş ilanlarının doğruluğunu veya işverenlerin güvenilirliğini garanti etmez. İş ilanlarını ve işverenleri dikkatlice değerlendirmek sizin sorumluluğunuzdadır.</li>
+                    <li>İşverenlerle iletişiminizde ve iş başvurularınızda profesyonel ve saygılı bir dil kullanmanız beklenmektedir.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>3.2. Profil Oluşturma:</h3>
+                <ul>
+                    <li>İş Arayan olarak, Uygulamada kişisel profilinizi oluşturabilirsiniz.</li>
+                    <li>Profilinizde doğru, güncel ve eksiksiz bilgi sağlamanız gerekmektedir.</li>
+                    <li>Profilinizde yanıltıcı veya yanlış bilgi sağlamanız, diğer Kullanıcıları ve İşverenleri yanıltabilir.</li>
+                    <li>Profilinizde kişisel verilerinizi ve hassas bilgilerinizi paylaşırken dikkatli olmanız gerekmektedir.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>3.3. Kullanım Kısıtlamaları:</h3>
+                <ul>
+                    <li>Uygulamayı yasalara aykırı amaçlarla veya bu Sözleşme'ye aykırı şekillerde kullanamazsınız.</li>
+                    <li>Spam, zincirleme mesajlar veya istenmeyen ticari iletişimler gönderemezsiniz.</li>
+                    <li>Uygulamanın işleyişini bozacak veya zarar verecek herhangi bir eylemde bulunamazsınız (virüs yayma, DDoS saldırıları vb.).</li>
+                    <li>Başka bir Kullanıcının hesabını izinsiz olarak kullanamazsınız veya erişmeye çalışamazsınız.</li>
+                    <li>Uygulamayı veya Hizmetleri kopyalayamaz, çoğaltamaz, yeniden satamaz veya dağıtamazsınız.</li>
+                    <li>Uygulamada yanıltıcı veya sahte profiller oluşturamazsınız.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>4. Hizmet Kullanımı - İşverenler</h2>
+            <section>
+                <h3>4.1. İş İlanı Yayınlama:</h3>
+                <ul>
+                    <li>İşveren olarak Uygulamayı kullanarak iş ilanları yayınlayabilirsiniz.</li>
+                    <li>İş ilanlarınızda doğru, eksiksiz ve yanıltıcı olmayan bilgi sağlamanız gerekmektedir.</li>
+                    <li>İş ilanlarınız yasalara, etik kurallara ve Uygulama politikalarına uygun olmalıdır.</li>
+                    <li>İş ilanlarınızda ayrımcı, ırkçı, cinsiyetçi, dini veya herhangi bir şekilde ayrımcılığa neden olacak ifadeler kullanmamalısınız.</li>
+                    <li>İş ilanlarınızda şiddeti, nefreti veya yasa dışı faaliyetleri teşvik eden içerikler yayınlayamazsınız.</li>
+                    <li>İş ilanlarınızda iletişim bilgilerinizi (telefon numarası, e-posta adresi vb.) doğru ve güncel tutmanız gerekmektedir.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>4.2. İş Arayanlarla İletişim:</h3>
+                <ul>
+                    <li>İş ilanlarınıza başvuran İş Arayanlarla Uygulama üzerinden iletişime geçebilirsiniz.</li>
+                    <li>İş Arayanlarla iletişiminizde profesyonel, saygılı ve etik bir dil kullanmanız beklenmektedir.</li>
+                    <li>İş Arayanlara iş teklifleri sunabilir ve iş görüşmeleri ayarlayabilirsiniz.</li>
+                    <li>İş Arayanlardan kişisel verilerini toplarken ve işlerken yürürlükteki veri koruma mevzuatına uygun davranmanız gerekmektedir.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>4.3. Kullanım Kısıtlamaları:</h3>
+                <ul>
+                    <li>Uygulamayı yasalara aykırı amaçlarla veya bu Sözleşme'ye aykırı şekillerde kullanamazsınız.</li>
+                    <li>Spam, zincirleme mesajlar veya istenmeyen ticari iletişimler gönderemezsiniz.</li>
+                    <li>Uygulamanın işleyişini bozacak veya zarar verecek herhangi bir eylemde bulunamazsınız (virüs yayma, DDoS saldırıları vb.).</li>
+                    <li>Başka bir Kullanıcının hesabını izinsiz olarak kullanamazsınız veya erişmeye çalışamazsınız.</li>
+                    <li>Uygulamayı veya Hizmetleri kopyalayamaz, çoğaltamaz, yeniden satamaz veya dağıtamazsınız.</li>
+                    <li>Uygulamada yanıltıcı veya sahte iş ilanları yayınlayamazsınız.</li>
+                    <li>Uygulamayı kullanarak yasa dışı veya etik olmayan iş teklifleri sunamazsınız.</li>
+                    <li>Uygulamayı kullanarak kullanıcıları taciz edemez, tehdit edemez veya rahatsız edemezsiniz.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>5. İçerik ve Fikri Mülkiyet</h2>
+            <section>
+                <h3>5.1. Kullanıcı İçeriği:</h3>
+                <ul>
+                    <li>Uygulamaya yüklediğiniz, paylaştığınız veya ilettiğiniz İçeriklerin sorumluluğu tamamen size aittir.</li>
+                    <li>İçeriklerinizin yasalara, etik kurallara ve Uygulama politikalarına uygun olmasını sağlamak sizin sorumluluğunuzdadır.</li>
+                    <li>İçeriklerinizin üçüncü kişilerin haklarını (telif hakkı, marka hakkı, kişilik hakları vb.) ihlal etmemesi gerekmektedir.</li>
+                    <li>Günübirlik, Kullanıcı İçeriklerini önceden inceleme veya denetleme yükümlülüğünde değildir. Ancak, yasa dışı, uygunsuz veya bu Sözleşme'ye aykırı İçerikleri kaldırma veya düzenleme hakkına sahiptir.</li>
+                    <li>Uygulamaya İçerik yükleyerek, Günübirlik'e bu İçerikleri Uygulama ve Hizmetlerin işletilmesi, tanıtımı ve geliştirilmesi amacıyla kullanma, çoğaltma, dağıtma, görüntüleme, değiştirme ve alt lisanslama hakkı verirsiniz. Bu hak, İçeriğinizi Uygulamada kaldırmanız veya hesabınızı kapatmanızdan sonra da devam edebilir (örneğin, anonimleştirilmiş veriler).</li>
+                </ul>
+            </section>
+            <section>
+                <h3>5.2. Günübirlik Fikri Mülkiyeti:</h3>
+                <ul>
+                    <li>Uygulama, Uygulama içeriği (yazılım, tasarım, logo, grafikler, metinler vb.) ve Fikri Mülkiyet Hakları Günübirlik'e veya lisans verenlerine aittir ve ilgili yasalarla korunmaktadır.</li>
+                    <li>Bu Sözleşme, size Uygulamanın veya Uygulama içeriğinin Fikri Mülkiyet Haklarını devretmez.</li>
+                    <li>Uygulamayı veya Uygulama içeriğini Günübirlik'in yazılı izni olmadan ticari amaçlarla kullanamaz, kopyalayamaz, çoğaltamaz, dağıtamaz, yayınlayamaz, değiştiremez veya türev çalışmalar oluşturamazsınız.</li>
+                    <li>Uygulama üzerindeki marka, logo ve diğer ticari işaretleri Günübirlik'in yazılı izni olmadan kullanamazsınız.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>6. Gizlilik ve Veri Koruma</h2>
+            <ul>
+                <li>Günübirlik, Kişisel Verilerinizi yürürlükteki veri koruma mevzuatına uygun olarak işlemektedir. Kişisel Verilerinizin nasıl toplandığı, kullanıldığı, saklandığı ve korunduğu hakkında detaylı bilgi için lütfen Günübirlik Gizlilik Politikası'nı inceleyiniz.</li>
+                <li>Uygulamayı kullanarak Gizlilik Politikası'nı kabul etmiş sayılırsınız.</li>
+                <li>Kullanıcılar arasında paylaşılan Gizli Bilgilerin gizliliğini korumak Kullanıcıların sorumluluğundadır. Günübirlik, Kullanıcılar arasındaki Gizli Bilgi paylaşımından sorumlu tutulamaz.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>7. Sorumluluk Reddi ve Sorumluluğun Sınırlandırılması</h2>
+            <section>
+                <h3>7.1. Hizmetin "Olduğu Gibi" Sunulması:</h3>
+                <ul>
+                    <li>Uygulama ve Hizmetler "olduğu gibi" ve "mevcut olduğu şekilde" sunulmaktadır. Günübirlik, Uygulamanın veya Hizmetlerin kesintisiz, hatasız, güvenli veya beklentilerinizi karşılayacağını garanti etmez.</li>
+                    <li>Günübirlik, Uygulamanın veya Hizmetlerin belirli bir amaca uygunluğunu, ticari değerini veya kalitesini garanti etmez.</li>
+                    <li>Uygulamanın kullanımı ve Hizmetlerden yararlanmanız tamamen sizin sorumluluğunuzdadır.</li>
+                </ul>
+            </section>
+            <section>
+                <h3>7.2. Sorumluluğun Sınırlandırılması:</h3>
+                <ul>
+                    <li>Günübirlik, Uygulamanın veya Hizmetlerin kullanımından kaynaklanan doğrudan, dolaylı, arızi, özel, cezai veya sonuç olarak ortaya çıkan zararlardan (kar kaybı, veri kaybı, itibar kaybı vb.) hiçbir şekilde sorumlu tutulamaz. Bu sorumluluk sınırlaması, sözleşme ihlali, haksız fiil (ihmal dahil), kusursuz sorumluluk veya diğer yasal teoriler temelinde ortaya çıksa dahi geçerlidir.</li>
+                    <li>Günübirlik, Uygulama üzerinden gerçekleşen Kullanıcılar arasındaki etkileşimlerden, iş ilişkilerinden, iş ilanlarından veya iş başvurularından sorumlu tutulamaz. İşverenlerin ve İş Arayanların eylemlerinden ve ihmallerinden Günübirlik sorumlu değildir.</li>
+                    <li>Günübirlik'in bu Sözleşme kapsamındaki toplam sorumluluğu, zararın ortaya çıktığı tarihten önceki 12 ay içinde Uygulama için ödediğiniz toplam ücreti (varsa) aşamaz.</li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>8. Tazminat</h2>
+            <p>Uygulamayı kullanımınızdan, bu Sözleşme'yi ihlalinizden veya üçüncü kişilerin haklarını ihlalinizden kaynaklanan her türlü iddia, talep, dava, zarar, kayıp, masraf ve avukatlık ücreti dahil olmak üzere Günübirlik'i ve iştiraklerini, yöneticilerini, çalışanlarını, temsilcilerini ve tedarikçilerini tazmin etmeyi ve zarar görmelerini engellemeyi kabul edersiniz.</p>
+        </section>
+
+        <section class="section">
+            <h2>9. Sözleşme Değişiklikleri</h2>
+            <ul>
+                <li>Günübirlik, bu Sözleşme'yi herhangi bir zamanda değiştirme hakkına sahiptir.</li>
+                <li>Sözleşme değişiklikleri Uygulamada yayınlandığı tarihten itibaren geçerli olacaktır.</li>
+                <li>Değişiklikler yayınlandıktan sonra Uygulamayı kullanmaya devam ederek, güncellenmiş Sözleşme'yi kabul etmiş sayılırsınız.</li>
+                <li>Sözleşme değişikliklerini düzenli olarak kontrol etmek sizin sorumluluğunuzdadır.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>10. Uygulanacak Hukuk ve Uyuşmazlık Çözümü</h2>
+            <ul>
+                <li>Bu Sözleşme ve Uygulamanın kullanımı Türkiye Cumhuriyeti hukukuna tabidir.</li>
+                <li>Bu Sözleşme'den doğan veya bu Sözleşme ile ilgili tüm uyuşmazlıkların çözümünde İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>11. İletişim</h2>
+            <p>Bu Sözleşme veya Uygulama hakkında herhangi bir sorunuz veya endişeniz varsa, lütfen [e-posta adresiniz] veya [iletişim formunuz] üzerinden bizimle iletişime geçin.</p>
+        </section>
+
+        <section class="section">
+            <h2>12. Bölünebilirlik</h2>
+            <p>Bu Sözleşme'nin herhangi bir hükmünün geçersiz veya uygulanamaz sayılması halinde, diğer hükümler geçerliliğini ve uygulanabilirliğini koruyacaktır. Geçersiz veya uygulanamaz sayılan hüküm, asıl hükmün amacına en yakın ve yasal olarak mümkün olan bir hükümle değiştirilecektir.</p>
+        </section>
+
+        <section class="section">
+            <h2>13. Bütün Anlaşma</h2>
+            <p>Bu Sözleşme, Uygulama kullanımı ile ilgili olarak sizinle Günübirlik arasındaki bütün anlaşmayı teşkil eder ve önceki tüm sözlü veya yazılı anlaşmaların yerine geçer.</p>
+        </section>
+
+        <section class="acceptance">
+            <p><strong>Kabul</strong></p>
+            <p>Uygulamayı kullanarak, bu Kullanıcı Sözleşmesi ve Politikası'nın tüm hüküm ve koşullarını okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan edersiniz.</p>
+            <p><strong>[Tarih]</strong></p>
+        </section>
+
+        <footer class="footer">
+            <p><strong>Günübirlik Uygulaması</strong></p>
+            <p>[Şirket Adı (Varsa)]</p>
+            <p>[Adres]</p>
+            <p>[E-posta Adresi]</p>
+            <p>[Web Sitesi (Varsa)]</p>
+        </footer>
+
+        <div class="important-note">
+            <strong>Önemli Notlar:</strong>
+            <ul>
+                <li>Bu taslak sözleşme politikası genel bir çerçevedir. Uygulamanızın özel ihtiyaçlarına ve yasal gerekliliklere göre bir avukat tarafından gözden geçirilmesi ve uyarlanması önemlidir.</li>
+                <li>Yerel yasal düzenlemeleri (özellikle veri koruma mevzuatı) dikkate alarak, sözleşmeyi ve gizlilik politikasını güncel tutmanız gerekmektedir.</li>
+                <li>Sözleşmeyi Uygulama içinde kolayca erişilebilir bir yere (örneğin, "Ayarlar" veya "Hakkında" bölümü) yerleştirmeniz ve kullanıcıların kayıt sırasında sözleşmeyi kabul etmelerini sağlamanız önemlidir.</li>
+                <li>Sözleşme'de yer alan "İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir" kısmı, şirketinizin merkezinin bulunduğu yere göre değiştirilebilir.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        function showPolicy(policyType) {
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            switch(policyType) {
+                case 'user':
+                    window.location.href = 'user_policy.html';
+                    break;
+                case 'privacy':
+                    window.location.href = 'privacy_policy.html';
+                    break;
+                case 'distance':
+                    window.location.href = 'distance_sales_contract.html';
+                    break;
+            }
+            
+            event.target.closest('.nav-button').classList.add('active');
+        }
+
+        // URL'den aktif politikayı belirle
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const buttons = document.querySelectorAll('.nav-button');
+            
+            buttons.forEach(btn => {
+                if (currentPath.includes('user_policy') && btn.textContent.includes('Kullanıcı')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('privacy_policy') && btn.textContent.includes('Gizlilik')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('distance_sales') && btn.textContent.includes('Mesafeli')) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

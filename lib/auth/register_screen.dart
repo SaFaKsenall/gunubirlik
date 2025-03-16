@@ -170,6 +170,18 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       appBar: AppBar(
+        backgroundColor: Colors.purple.shade100,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.purple.shade700),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Kayıt Olma',
+          style: TextStyle(color: Colors.purple.shade700),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

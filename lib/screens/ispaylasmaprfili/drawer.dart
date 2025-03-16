@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/model/user_model.dart';
 import 'package:myapp/notifications/notivications.dart';
-import 'package:myapp/notifications/yardim_destek.dart';
+import 'package:myapp/drawer-pages/yardim_destek.dart';
+import 'package:myapp/drawer-pages/connected_devices_page.dart';
 
 class MyDrawer extends StatelessWidget {
   final UserModel user;
@@ -17,10 +18,7 @@ class MyDrawer extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.blue.shade800,
-              Colors.blue.shade600,
-            ],
+            colors: [Colors.blue.shade800, Colors.blue.shade600],
           ),
         ),
         child: SafeArea(
@@ -46,13 +44,18 @@ class MyDrawer extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 45,
                         backgroundColor: Colors.white,
-                        backgroundImage: user.profileImageUrl != null
-                            ? NetworkImage(user.profileImageUrl!)
-                            : null,
-                        child: user.profileImageUrl == null
-                            ? Icon(Icons.person,
-                                size: 45, color: Colors.blue.shade800)
-                            : null,
+                        backgroundImage:
+                            user.profileImageUrl != null
+                                ? NetworkImage(user.profileImageUrl!)
+                                : null,
+                        child:
+                            user.profileImageUrl == null
+                                ? Icon(
+                                  Icons.person,
+                                  size: 45,
+                                  color: Colors.blue.shade800,
+                                )
+                                : null,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -88,17 +91,43 @@ class MyDrawer extends StatelessWidget {
                         _buildDrawerItem(
                           icon: Icons.person_outline,
                           title: 'Cv Oluşturma',
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context); // Drawer'ı kapat
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ConstructionPage(),
+                              ),
+                            );
+                          },
                         ),
+
                         _buildDrawerItem(
                           icon: Icons.work_outline,
                           title: 'Bağlı Cihazlar',
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context); // Drawer'ı kapat
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ConstructionPage(),
+                              ),
+                            );
+                            //ConnectedDevicesPage(currentUser: FirebaseAuth.instance.currentUser!)));
+                          },
                         ),
                         _buildDrawerItem(
                           icon: Icons.message_outlined,
                           title: 'Uygulama Güncellemeri',
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context); // Drawer'ı kapat
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ConstructionPage(),
+                              ),
+                            );
+                          },
                         ),
                         _buildDrawerItem(
                           icon: Icons.notifications_outlined,
@@ -106,10 +135,13 @@ class MyDrawer extends StatelessWidget {
                           onTap: () {
                             Navigator.pop(context); // Drawer'ı kapat
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NotificationSettingsPage()));
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        const NotificationSettingsPage(),
+                              ),
+                            );
                           },
                         ),
                         _buildDrawerItem(
@@ -126,7 +158,7 @@ class MyDrawer extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>  YardimDestekPage(),
+                                builder: (context) => YardimDestekPage(),
                               ),
                             );
                           },
@@ -134,7 +166,15 @@ class MyDrawer extends StatelessWidget {
                         _buildDrawerItem(
                           icon: Icons.info_outline,
                           title: 'Hakkında',
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.pop(context); // Drawer'ı kapat
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ConstructionPage(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -143,9 +183,7 @@ class MyDrawer extends StatelessWidget {
               ),
               // Çıkış Yap Butonu
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.red.shade400,
-                ),
+                decoration: BoxDecoration(color: Colors.red.shade400),
                 child: _buildDrawerItem(
                   icon: Icons.logout,
                   title: 'Çıkış Yap',
@@ -179,10 +217,7 @@ class MyDrawer extends StatelessWidget {
       leading: Icon(icon, color: color ?? Colors.white),
       title: Text(
         title,
-        style: TextStyle(
-          color: color ?? Colors.white,
-          fontSize: 16,
-        ),
+        style: TextStyle(color: color ?? Colors.white, fontSize: 16),
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),

@@ -68,6 +68,7 @@ class _AnimatedBottomTabBarState extends State<AnimatedBottomTabBar> {
             label: 'Ayarlar',
             backgroundColor: Colors.orange[50],
           ),
+         
         ],
       ),
     );

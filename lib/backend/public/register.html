@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="assets/css/auth-card.css">
+    <link rel="stylesheet" href="assets/css/social-buttons.css">
+    <link rel="stylesheet" href="assets/css/form.css">
+    <link rel="stylesheet" href="assets/css/utilities.css">
+    <!-- CSS Stilleri - İleride ayrı bir CSS dosyasına taşınabilir -->
+    <style>
+        /**************************************************
+         * GENEL STILLER
+         * Temel sayfa stilleri ve genel düzen
+         * İleride auth.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /**************************************************
+         * KART STILLER
+         * Giriş/Kayıt kartı stilleri
+         * İleride auth-card.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .container {
+            position: relative;
+            width: 400px;
+            height: 620px;
+        }
+
+        .container .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .container .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card .back {
+            transform: rotateY(180deg);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /**************************************************
+         * SOSYAL BUTON STILLER
+         * Sosyal medya giriş butonları stilleri
+         * İleride social-buttons.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .social-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .social-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .facebook { background: #4267B2; }
+        .google { background: #DB4437; }
+        .twitter { background: #1DA1F2; }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #666;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        /**************************************************
+         * FORM STILLER
+         * Form elemanları stilleri
+         * İleride form.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 50px;
+            padding: 10px 20px 10px 50px;
+            font-size: 16px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .form-control:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 15px rgba(118,75,162,0.2);
+            outline: none;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus + .input-icon {
+            color: #764ba2;
+        }
+
+        .btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            margin-bottom: 60px; /* Alt yazı için boşluk bırak */
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(118,75,162,0.3);
+        }
+
+        /**************************************************
+         * YARDIMCI STILLER
+         * Yardımcı metin ve link stilleri
+         * İleride utilities.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        .bottom-text {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #666;
+            padding: 0 20px;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1;
+        }
+
+        .link {
+            color: #764ba2;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            color: #667eea;
+        }
+
+        /**************************************************
+         * RESPONSIVE STILLER
+         * Farklı ekran boyutları için responsive tasarım stilleri
+         * İleride responsive.css olarak ayrı bir dosyaya taşınabilir
+         **************************************************/
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                height: 600px; /* Yüksekliği artır */
+                padding: 0 15px;
+            }
+
+            .card .face {
+                padding: 30px 20px; /* Padding'i azalt */
+            }
+
+            .btn {
+                margin-bottom: 70px; /* Mobilde daha fazla boşluk */
+            }
+
+            .bottom-text {
+                bottom: 30px; /* Alt boşluğu artır */
+                font-size: 14px; /* Yazı boyutunu küçült */
+            }
+
+            .form-group {
+                margin-bottom: 15px; /* Form grupları arasındaki boşluğu azalt */
+            }
+
+            .form-control {
+                height: 45px; /* Input yüksekliğini azalt */
+                font-size: 14px; /* Font boyutunu küçült */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="authCard">
+            <!-- Formlar dinamik olarak yüklenecek -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, 
+            firestore,
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword,
+            updateProfile,
+            signOut,
+            onAuthStateChanged,
+            doc, 
+            setDoc,
+            getDoc 
+        } from './assets/js/firebaseConfig.js';
+        import { signInWithGoogle, signInWithFacebook, signInWithTwitter } from './assets/js/social-auth.js';
+
+        // Manuel kimlik doğrulama fonksiyonları
+        async function registerWithEmail(fullName, email, password) {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                await updateProfile(userCredential.user, {
+                    displayName: fullName
+                });
+
+                await setDoc(doc(firestore, 'users', userCredential.user.uid), {
+                    fullName: fullName,
+                    email: email,
+                    createdAt: new Date().toISOString(),
+                    userId: userCredential.user.uid,
+                    isActive: true,
+                    role: 'user'
+                });
+
+                return { success: true, user: userCredential.user };
+            } catch (error) {
+                console.error('Register error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function loginWithEmail(email, password) {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (userCredential.user) {
+                    const userDoc = await getDoc(doc(firestore, 'users', userCredential.user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        updateUserInfo(userData);
+                    }
+                    return { success: true, user: userCredential.user };
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        function updateUserInfo(userData) {
+            try {
+                // Kullanıcı adını güncelle
+                const userDisplayName = document.getElementById('userDisplayName');
+                if (userDisplayName) {
+                    userDisplayName.textContent = userData.fullName || 'Kullanıcı';
+                }
+
+                // Profil sayfası elementlerini güncelle
+                const profileElements = {
+                    'fullNameValue': userData.fullName,
+                    'emailValue': userData.email,
+                    'roleValue': userData.role,
+                    'isActiveValue': userData.isActive ? '✅ Aktif' : '❌ Pasif',
+                    'createdAtValue': userData.createdAt ? new Date(userData.createdAt).toLocaleString('tr-TR') : 'Belirtilmemiş'
+                };
+
+                Object.entries(profileElements).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value || 'Belirtilmemiş';
+                    }
+                });
+            } catch (error) {
+                console.error('Kullanıcı bilgileri güncellenirken hata:', error);
+            }
+        }
+
+        // Sosyal medya giriş fonksiyonlarını global scope'a ekle
+        window.signInWithGoogle = signInWithGoogle;
+        window.signInWithFacebook = signInWithFacebook;
+        window.signInWithTwitter = signInWithTwitter;
+
+        // Kart çevirme fonksiyonu
+        function flipCard() {
+            document.querySelector('.card').classList.toggle('flipped');
+        }
+        window.flipCard = flipCard;
+
+        // HTML bileşenlerini yükle
+        async function loadComponents() {
+            const authCard = document.getElementById('authCard');
+            
+            try {
+                // Sosyal medya butonlarını yükle
+                const socialButtonsResponse = await fetch('components/auth/social-buttons.html');
+                const socialButtonsHtml = await socialButtonsResponse.text();
+                
+                // Kayıt formunu yükle
+                const registerFormResponse = await fetch('components/auth/register-form.html');
+                const registerFormHtml = await registerFormResponse.text();
+                
+                // Giriş formunu yükle
+                const loginFormResponse = await fetch('components/auth/login-form.html');
+                const loginFormHtml = await loginFormResponse.text();
+                
+                // Formları auth card'a ekle
+                authCard.innerHTML = registerFormHtml + loginFormHtml;
+                
+                // Sosyal medya butonlarını her iki forma da ekle
+                document.querySelectorAll('#socialButtonsContainer').forEach(container => {
+                    container.innerHTML = socialButtonsHtml;
+                });
+                
+                // Event listener'ları ekle
+                setupEventListeners();
+            } catch (error) {
+                console.error('Bileşenler yüklenirken hata:', error);
+            }
+        }
+
+        // Event listener'ları ekle
+        function setupEventListeners() {
+            // Register Form
+            document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (password !== confirmPassword) {
+                    alert('Şifreler eşleşmiyor!');
+                    return;
+                }
+
+                const result = await registerWithEmail(fullName, email, password);
+                if (result.success) {
+                    alert('Kayıt başarılı! Anasayfaya yönlendiriliyorsunuz...');
+                    window.location.replace('./homepage.html');
+                } else {
+                    alert('Kayıt hatası: ' + result.error);
+                }
+            });
+
+            // Login Form
+            document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                const result = await loginWithEmail(email, password);
+                if (result.success) {
+                    console.log('Giriş başarılı:', result.user.email);
+                    window.location.replace('./homepage.html');
+                } else {
+                    if (result.error.includes('invalid-credential')) {
+                        alert('Hatalı email veya şifre!');
+                    } else {
+                        alert('Giriş hatası: ' + result.error);
+                    }
+                }
+            });
+
+            // Kart çevirme butonları için event listener'lar
+            document.querySelectorAll('[data-action]').forEach(element => {
+                element.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    flipCard();
+                });
+            });
+        }
+
+        // Oturum kontrolü - sadece normal kullanıcı oturumu için
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Kullanıcı oturumu varsa ana sayfaya yönlendir
+                window.location.replace('./homepage.html');
+            } else {
+                // Oturum yoksa bileşenleri yükle
+                loadComponents();
+            }
+        });
+    </script>
+</body>
+</html>

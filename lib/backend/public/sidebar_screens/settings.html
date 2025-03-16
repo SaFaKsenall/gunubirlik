@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayarlar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/themes.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/settings.css">
+    <style>
+        /* Settings page specific styles */
+        .main-content {
+            margin-left: 250px; /* Match sidebar width */
+            padding: 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .settings-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .settings-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .settings-header h1 i {
+            color: var(--primary-color, #764ba2);
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .settings-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color, #764ba2);
+            background: rgba(118, 75, 162, 0.1);
+            padding: 0.8rem;
+            border-radius: 12px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .settings-content {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .setting-item {
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .setting-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .setting-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+        }
+        
+        .setting-input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color, #764ba2);
+            box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.2);
+        }
+        
+        /* Switch toggle styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color, #764ba2);
+        }
+        
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color, #764ba2);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .slider.round {
+            border-radius: 34px;
+        }
+        
+        .slider.round:before {
+            border-radius: 50%;
+        }
+        
+        /* Button styling */
+        .setting-button {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary-color, #764ba2);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .setting-button:hover {
+            background: var(--button-hover, #8a5bb7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .setting-button.danger {
+            background: var(--danger-button, #dc3545);
+        }
+        
+        .setting-button.danger:hover {
+            background: var(--danger-button-hover, #c82333);
+        }
+        
+        /* Danger zone styling */
+        .danger-zone {
+            border-color: var(--danger-button, #dc3545);
+            background: rgba(220, 53, 69, 0.05);
+        }
+        
+        /* Device info styling */
+        .device-info, .connected-devices {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        /* Settings tabs */
+        .settings-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .settings-tab {
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-card);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .settings-tab.active {
+            background: var(--primary-color, #764ba2);
+            color: white;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1><i class="fas fa-cog"></i> Ayarlar</h1>
+                <button id="saveSettingsBtn" class="setting-button" style="max-width: 200px; margin-left: auto;">
+                    <i class="fas fa-save"></i> Ayarları Kaydet
+                </button>
+            </div>
+            
+            <!-- Settings tabs -->
+            <div class="settings-tabs">
+                <div class="settings-tab active" data-tab="all">
+                    <i class="fas fa-th-large"></i> Tüm Ayarlar
+                </div>
+                <div class="settings-tab" data-tab="appearance">
+                    <i class="fas fa-palette"></i> Görünüm
+                </div>
+                <div class="settings-tab" data-tab="notifications">
+                    <i class="fas fa-bell"></i> Bildirimler
+                </div>
+                <div class="settings-tab" data-tab="privacy">
+                    <i class="fas fa-shield-alt"></i> Gizlilik
+                </div>
+                <div class="settings-tab" data-tab="account">
+                    <i class="fas fa-user-cog"></i> Hesap
+                </div>
+                <div class="settings-tab" data-tab="devices">
+                    <i class="fas fa-mobile-alt"></i> Cihazlar
+                </div>
+            </div>
+            
+            <div class="settings-grid">
+                <!-- Görünüm Ayarları -->
+                <div class="settings-card" id="appearanceCard">
+                    <div class="card-header">
+                        <i class="fas fa-palette"></i>
+                        <h2>Görünüm Ayarları</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-label">Tema</div>
+                            <select class="setting-input" id="themeSelect">
+                                <option value="light">Açık Tema</option>
+                                <option value="dark">Koyu Tema</option>
+                                <option value="system">Sistem Teması</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">Yazı Boyutu</div>
+                            <select class="setting-input" id="fontSizeSelect">
+                                <option value="small">Küçük</option>
+                                <option value="medium">Orta</option>
+                                <option value="large">Büyük</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bildirim Ayarları -->
+                <div class="settings-card" id="notificationsCard">
+                    <div class="card-header">
+                        <i class="fas fa-bell"></i>
+                        <h2>Bildirim Ayarları</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-label">E-posta Bildirimleri</div>
+                            <label class="switch">
+                                <input type="checkbox" id="emailNotifications">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">Yeni İş İlanları</div>
+                            <label class="switch">
+                                <input type="checkbox" id="newJobNotifications">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">Mesaj Bildirimleri</div>
+                            <label class="switch">
+                                <input type="checkbox" id="messageNotifications">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gizlilik Ayarları -->
+                <div class="settings-card" id="privacyCard">
+                    <div class="card-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h2>Gizlilik ve Güvenlik</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-label">Profil Gizliliği</div>
+                            <select class="setting-input" id="privacySelect">
+                                <option value="public">Herkese Açık</option>
+                                <option value="private">Gizli</option>
+                                <option value="friends">Sadece Arkadaşlar</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">Konum Paylaşımı</div>
+                            <label class="switch">
+                                <input type="checkbox" id="locationSharing">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">İki Faktörlü Doğrulama</div>
+                            <label class="switch">
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hesap Ayarları -->
+                <div class="settings-card" id="accountCard">
+                    <div class="card-header">
+                        <i class="fas fa-user-cog"></i>
+                        <h2>Hesap Ayarları</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-label">Şifre Değiştir</div>
+                            <button class="setting-button" onclick="window.location.href='/change-password.html'">
+                                <i class="fas fa-key"></i> Şifre Değiştir
+                            </button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">E-posta Değiştir</div>
+                            <button class="setting-button" onclick="window.location.href='/change-email.html'">
+                                <i class="fas fa-envelope"></i> E-posta Değiştir
+                            </button>
+                        </div>
+                        <div class="setting-item danger-zone">
+                            <div class="setting-label">Hesabı Dondur</div>
+                            <p class="setting-description">Hesabınızı geçici olarak devre dışı bırakır. Daha sonra tekrar aktifleştirebilirsiniz.</p>
+                            <button class="setting-button danger" onclick="window.location.href='../deactivate-account.html'">
+                                <i class="fas fa-user-slash"></i> Hesabı Dondur
+                            </button>
+                        </div>
+                        
+                        <div class="setting-item danger-zone">
+                            <div class="setting-label">Hesap Verilerini Sil</div>
+                            <p class="setting-description">Hesabınızla ilgili tüm verileri siler. Bu işlem geri alınamaz.</p>
+                            <button class="setting-button danger" onclick="window.location.href='../delete-account-verification.html'">
+                                <i class="fas fa-trash-alt"></i> Hesap Verilerini Sil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cihaz Ayarları -->
+                <div class="settings-card" id="devicesCard">
+                    <div class="card-header">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h2>Cihaz Yönetimi</h2>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <div class="setting-label">Son Giriş Yapılan Cihaz</div>
+                            <div class="device-info" id="lastLoginDevice">
+                                <div class="loading-device">Yükleniyor...</div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">Bağlı Cihazlar</div>
+                            <div class="connected-devices" id="connectedDevices">
+                                <div class="loading-device">Yükleniyor...</div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <button class="setting-button" onclick="window.location.href='/settings.html#devices'">
+                                <i class="fas fa-cogs"></i> Tüm Cihazları Yönet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, 
+            firestore,
+            onAuthStateChanged,
+            doc, 
+            getDoc 
+        } from '../assets/js/firebaseConfig.js';
+        import { loadSidebar } from '../assets/js/sidebar.js';
+        import { loadSettings } from '../assets/js/settings.js';
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Ayarlar sayfası yükleniyor...');
+            
+            try {
+                // Sidebar'ı yükle
+                await loadSidebar();
+                
+                // onAuthStateChanged ile oturum kontrolü
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        console.log('Firebase Auth oturumu bulundu:', user.uid);
+                        
+                        // Ayarları yükle
+                        await loadSettings();
+                        
+                        // Sekme değiştirme işlevselliği
+                        setupTabFunctionality();
+                    } else {
+                        // QR oturum kontrolü
+                        const qrSessionData = localStorage.getItem('qrSession');
+                        if (qrSessionData) {
+                            try {
+                                const qrSession = JSON.parse(qrSessionData);
+                                const sessionDoc = await getDoc(doc(firestore, 'qr_sessions', qrSession.sessionId));
+                                
+                                if (sessionDoc.exists() && sessionDoc.data().status === 'completed') {
+                                    console.log('QR oturumu bulundu:', qrSession.uid);
+                                    
+                                    // Ayarları yükle
+                                    await loadSettings();
+                                    
+                                    // Sekme değiştirme işlevselliği
+                                    setupTabFunctionality();
+                                    return;
+                                } else {
+                                    console.log('QR oturumu geçersiz');
+                                    localStorage.removeItem('qrSession');
+                                }
+                            } catch (error) {
+                                console.error('QR oturum kontrolü hatası:', error);
+                            }
+                        }
+                        
+                        console.log('Oturum bulunamadı, yönlendiriliyor...');
+                        window.location.href = '/register.html';
+                    }
+                });
+            } catch (error) {
+                console.error('Ayarlar sayfası yüklenirken hata:', error);
+                console.log('Hata detayları:', error.message);
+            }
+        });
+        
+        // Sekme değiştirme işlevselliği
+        function setupTabFunctionality() {
+            const tabs = document.querySelectorAll('.settings-tab');
+            const cards = document.querySelectorAll('.settings-card');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Aktif sekmeyi değiştir
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Tüm kartları göster veya gizle
+                    if (tabId === 'all') {
+                        cards.forEach(card => card.style.display = 'block');
+                    } else {
+                        cards.forEach(card => {
+                            if (card.id === tabId + 'Card') {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html> 

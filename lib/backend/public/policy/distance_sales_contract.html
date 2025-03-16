@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Günübirlik Uygulaması Politikaları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #764ba2;
+            --secondary-color: #667eea;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-primary: #fff;
+            --bg-secondary: #f8f8f8;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .policy-nav {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-buttons {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background-color: var(--bg-primary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 { 
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .important-note {
+            background: rgba(118, 75, 162, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="policy-nav">
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showPolicy('user')">
+                <i class="fas fa-user-shield"></i> Kullanıcı Sözleşmesi
+            </button>
+            <button class="nav-button" onclick="showPolicy('privacy')">
+                <i class="fas fa-lock"></i> Gizlilik Politikası
+            </button>
+            <button class="nav-button active" onclick="showPolicy('distance')">
+                <i class="fas fa-shopping-cart"></i> Mesafeli Satış
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Günübirlik Uygulaması Uzaktan Satış Sözleşmesi</h1>
+        </header>
+
+        <section class="section">
+            <h2>1. Taraflar</h2>
+            <p><strong>Satıcı:</strong></p>
+            <p>[Şirket Adı (Varsa)]</p>
+            <p>[Şirket Adresi]</p>
+            <p>[Vergi Dairesi ve Vergi Numarası]</p>
+            <p>[MERSİS Numarası (Varsa)]</p>
+            <p>E-posta: [Satış İletişim E-postası]</p>
+            <p>Web Sitesi (Varsa): [Web Sitesi Adresi]</p>
+
+            <p><strong>Alıcı:</strong></p>
+            <p>Günübirlik Uygulaması kullanıcısı (Bundan sonra "<strong>Alıcı</strong>" olarak anılacaktır).</p>
+        </section>
+
+        <section class="section">
+            <h2>2. Sözleşmenin Konusu ve Kapsamı</h2>
+            <p>İşbu Uzaktan Satış Sözleşmesi ("<strong>Sözleşme</strong>"), Alıcı'nın, Satıcı'ya ait Günübirlik mobil uygulaması ("<strong>Uygulama</strong>") üzerinden elektronik ortamda siparişini verdiği ve aşağıda nitelikleri ve satış koşulları belirtilen hizmetin/ürünün satışı ve teslimi ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve yükümlülüklerini düzenler.</p>
+        </section>
+
+        <section class="section">
+            <h2>3. Sözleşme Konusu Hizmet/Ürün Bilgileri</h2>
+            <p>Hizmetin/Ürünün Temel Özellikleri (türü, miktarı, marka/modeli, rengi, adedi): [Satışı Yapılan Hizmet/Ürünlerin Detaylı Açıklaması - Örn: Premium Üyelik Paketi, İlan Yayınlama Kredisi vb.]</p>
+            <p>Satış Bedeli (KDV Dahil): [Hizmet/Ürün Bedeli]</p>
+            <p>Ödeme Şekli: [Kredi Kartı, Banka Kartı, Diğer Ödeme Yöntemleri]</p>
+        </section>
+
+        <section class="section">
+            <h2>4. Genel Hükümler</h2>
+            <ul>
+                <li>Alıcı, Sözleşme konusu hizmet/ürün ile ilgili temel nitelikleri, satış fiyatı ve ödeme şekli ile cayma hakkı gibi ön bilgileri okuyup bilgi sahibi olduğunu ve elektronik ortamda gerekli teyidi verdiğini kabul, beyan ve taahhüt eder.</li>
+                <li>Satıcı, Sözleşme konusu hizmeti/ürünü eksiksiz, belirtilen niteliklere uygun ve ayıplı olmaksızın Alıcı'ya sunmakla yükümlüdür.</li>
+                <li>Satıcı, haklı gerekçelerle Sözleşme konusu hizmet/ürün tedarik edememesi durumunda, Alıcı'yı bilgilendirerek, Alıcı'ya eşit kalite ve fiyatta başka bir hizmet/ürün tedarik edebilir veya ödenen bedeli iade edebilir.</li>
+                <li>Sözleşme konusu hizmet/ürünün sunumu/teslimi, ödemenin Satıcı hesaplarına girmesinden sonra [Teslim Süresi - Örn: 24 Saat] içinde gerçekleştirilir. Dijital hizmetler genellikle ödeme onayından hemen sonra aktifleşir.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>5. Cayma Hakkı</h2>
+            <p>Alıcı, Sözleşme konusu uzaktan satış sözleşmesine konu hizmetin/ürünün niteliği gereği cayma hakkını kullanamaz. [**ÖNEMLİ:** Eğer dijital hizmetler sunuyorsanız ve cayma hakkı istisnasına giriyorsa bu ifadeyi kullanabilirsiniz. Ancak Tüketici Kanunu'ndaki güncel düzenlemeleri ve uygulamanızın sunduğu hizmetin/ürünün niteliğini bir avukata danışarak teyit etmeniz önemlidir. Bazı dijital içerik ve hizmetlerde cayma hakkı istisnası uygulanabilirken, bazı durumlarda uygulanamayabilir.]</p>
+
+            <p>**VEYA (Eğer Cayma Hakkı Tanıyorsanız - Dijital Olmayan Ürünler İçin Örn.):**</p>
+
+            <p>Alıcı, Sözleşme konusu hizmet/ürünü teslim aldığı tarihten itibaren 14 (on dört) gün içinde herhangi bir gerekçe göstermeksizin ve cezai şart ödemeksizin cayma hakkını kullanabilir. Cayma hakkının kullanılabilmesi için, hizmetin/ürünün kullanılmamış/zarar görmemiş olması gerekmektedir. Cayma hakkının kullanılması halinde, Alıcı, cayma bildirimini [Satıcı İletişim E-postası] adresine veya [Satıcı Posta Adresi] adresine yazılı olarak bildirmelidir. Cayma bildiriminin Satıcı'ya ulaşmasını takip eden 14 (on dört) gün içinde hizmet/ürün bedeli Alıcı'ya iade edilir.</p>
+            <p>Cayma hakkının kullanıldığı durumlarda, hizmet/ürünün iade masrafları [Alıcı/Satıcı] tarafından karşılanır. [Duruma göre belirtin.]</p>
+        </section>
+
+        <section class="section">
+            <h2>6. Ödeme</h2>
+            <p>Ödeme, Uygulama üzerinden belirtilen ödeme yöntemleri (kredi kartı, banka kartı vb.) ile gerçekleştirilir. Ödeme işlemleri güvenli ödeme altyapıları üzerinden yapılmaktadır. Satıcı, ödeme bilgilerine erişemez ve saklamaz. [Ödeme sistemi hakkında daha detaylı bilgi ekleyebilirsiniz.]</p>
+        </section>
+
+        <section class="section">
+            <h2>7. Uyuşmazlıkların Çözümü</h2>
+            <p>İşbu Sözleşme'nin uygulanmasından doğabilecek her türlü uyuşmazlığın çözümünde Tüketici Hakem Heyetleri ve Tüketici Mahkemeleri yetkilidir. Tüketici Hakem Heyetleri'nin yetki sınırı, Tüketici ve Ticaret Bakanlığı tarafından her yıl belirlenen parasal sınırlar dâhilindedir.</p>
+        </section>
+
+        <section class="section">
+            <h2>8. Yürürlük</h2>
+            <p>İşbu Sözleşme, Alıcı'nın Uygulama üzerinden siparişini vermesi ve ödemeyi gerçekleştirmesi ile yürürlüğe girer.</p>
+        </section>
+
+        <section class="contract-details">
+            <h3>Sözleşme Detayları</h3>
+            <p><strong>Sözleşme Tarihi:</strong> [Sipariş Tarihi]</p>
+            <p><strong>Alıcı Adı Soyadı/Unvanı:</strong> [Alıcı Adı Soyadı/Unvanı]</p>
+            <p><strong>Alıcı Adresi:</strong> [Alıcı Adresi]</p>
+            <p><strong>Alıcı E-postası:</strong> [Alıcı E-postası]</p>
+            <p><strong>Alıcı Telefonu:</strong> [Alıcı Telefonu]</p>
+        </section>
+
+
+        <footer class="footer">
+            <p><strong>Günübirlik Uygulaması</strong></p>
+            <p>[Şirket Adı (Varsa)]</p>
+            <p>[Adres]</p>
+            <p>[Satış İletişim E-postası]</p>
+            <p>[Web Sitesi (Varsa)]</p>
+            <p>Son Güncelleme Tarihi: [Güncelleme Tarihi]</p>
+        </footer>
+
+        <div class="important-note">
+            <strong>Önemli Notlar:</strong>
+            <ul>
+                <li>Bu taslak uzaktan satış sözleşmesi genel bir çerçevedir. Uygulamanızın sunduğu hizmetlere/ürünlere, satış modelinize ve yasal gerekliliklere (özellikle 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği) göre bir avukat tarafından gözden geçirilmesi ve uyarlanması **kesinlikle** önemlidir.</li>
+                <li>Cayma hakkı, dijital hizmetlerin/ürünlerin niteliğine göre değişiklik gösterebilir. Bu konuyu bir avukata danışarak netleştirmeniz ve sözleşmeye doğru ifadeyi eklemeniz önemlidir. Eğer cayma hakkı tanıyorsanız, iade koşullarını ve masrafları net bir şekilde belirtin.</li>
+                <li>[Şirket Adı (Varsa)], [Şirket Adresi], [Vergi Dairesi ve Vergi Numarası], [MERSİS Numarası (Varsa)], [Satış İletişim E-postası], [Web Sitesi Adresi], [Satışı Yapılan Hizmet/Ürünlerin Detaylı Açıklaması], [Hizmet/Ürün Bedeli], [Kredi Kartı, Banka Kartı, Diğer Ödeme Yöntemleri], [Teslim Süresi], [Satıcı İletişim E-postası], [Satıcı Posta Adresi], [Alıcı/Satıcı], [Ödeme sistemi hakkında daha detaylı bilgi ekleyebilirsiniz.], [Güncelleme Tarihi], [Sipariş Tarihi], [Alıcı Adı Soyadı/Unvanı], [Alıcı Adresi], [Alıcı E-postası], ve [Alıcı Telefonu] gibi yerleri kendi bilgilerinizle güncelleyin ve parantez içindeki açıklamaları kaldırın.</li>
+                <li>Sözleşmeyi Uygulama içinde kolayca erişilebilir bir yere yerleştirmeniz ve kullanıcıların satın alma işlemi öncesinde sözleşmeyi okuyup kabul etmelerini sağlamanız önemlidir.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        function showPolicy(policyType) {
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            switch(policyType) {
+                case 'user':
+                    window.location.href = 'user_policy.html';
+                    break;
+                case 'privacy':
+                    window.location.href = 'privacy_policy.html';
+                    break;
+                case 'distance':
+                    window.location.href = 'distance_sales_contract.html';
+                    break;
+            }
+            
+            event.target.closest('.nav-button').classList.add('active');
+        }
+
+        // URL'den aktif politikayı belirle
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const buttons = document.querySelectorAll('.nav-button');
+            
+            buttons.forEach(btn => {
+                if (currentPath.includes('user_policy') && btn.textContent.includes('Kullanıcı')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('privacy_policy') && btn.textContent.includes('Gizlilik')) {
+                    btn.classList.add('active');
+                } else if (currentPath.includes('distance_sales') && btn.textContent.includes('Mesafeli')) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

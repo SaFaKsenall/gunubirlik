@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/themes.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <style>
+        /* Profile page specific styles */
+        .main-content {
+            margin-left: 250px; /* Match sidebar width */
+            padding: 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .profile-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .profile-header h1 i {
+            color: var(--primary-color, #764ba2);
+        }
+        
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 1.5rem;
+        }
+        
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .profile-avatar {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .avatar-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #999;
+        }
+        
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-role {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: rgba(118, 75, 162, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .profile-status {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(118, 75, 162, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color, #764ba2);
+        }
+        
+        .status-info {
+            flex: 1;
+        }
+        
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .status-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .profile-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .profile-section {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: var(--primary-color, #764ba2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.8rem;
+        }
+        
+        .user-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+        
+        .detail-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .detail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color, #764ba2);
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .detail-label i {
+            color: var(--primary-color, #764ba2);
+        }
+        
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+        
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .not-verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .active-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--primary-color, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--button-hover, #8a5bb7);
+            transform: scale(1.05);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .profile-header h1 {
+                font-size: 1.5rem;
+                margin-left: 40px; /* Make room for the toggle button */
+            }
+            
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            
+            .user-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.8rem;
+            }
+            
+            .profile-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .profile-sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-section, .profile-avatar, .profile-status {
+                padding: 1rem;
+            }
+        }
+        
+        /* When sidebar is active on mobile */
+        .main-content.sidebar-active {
+            margin-left: 250px;
+        }
+        
+        /* Sidebar active state for mobile */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content.sidebar-active {
+                margin-left: 0;
+                opacity: 0.7;
+            }
+        }
+        
+        /* Loading animation */
+        .loading-value {
+            display: inline-block;
+            position: relative;
+            width: 80%;
+            height: 1.2rem;
+            background: linear-gradient(90deg, 
+                #f0f0f0, 
+                #e0e0e0, 
+                #f0f0f0);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile sidebar toggle button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1><i class="fas fa-user-circle"></i> Profil Bilgileri</h1>
+            </div>
+            
+            <div class="profile-layout">
+                <!-- Left sidebar with user info -->
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <div class="avatar-image" id="userAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-name" id="userNameDisplay">Yükleniyor...</div>
+                        <div class="user-role" id="userRoleDisplay">Yükleniyor...</div>
+                    </div>
+                    
+                    <div class="profile-status">
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-label">Kayıt Tarihi</div>
+                                <div class="status-value" id="createdAtValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-label">Son Giriş</div>
+                                <div class="status-value" id="lastLoginValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-label">Son Güncelleme</div>
+                                <div class="status-value" id="lastUpdatedValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right content area with user details -->
+                <div class="profile-content">
+                    <div class="profile-section">
+                        <div class="section-title">
+                            <i class="fas fa-id-card"></i> Kişisel Bilgiler
+                        </div>
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-user"></i> Ad Soyad</div>
+                                <div class="detail-value" id="fullNameValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-at"></i> Kullanıcı Adı</div>
+                                <div class="detail-value" id="usernameValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-envelope"></i> E-posta</div>
+                                <div class="detail-value" id="emailValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-phone"></i> Telefon Numarası</div>
+                                <div class="detail-value" id="phoneNumberValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <div class="section-title">
+                            <i class="fas fa-shield-alt"></i> Hesap Bilgileri
+                        </div>
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-check-circle"></i> Telefon Doğrulama</div>
+                                <div class="detail-value" id="phoneVerifiedValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-user-tag"></i> Kullanıcı Rolü</div>
+                                <div class="detail-value" id="roleValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-toggle-on"></i> Hesap Durumu</div>
+                                <div class="detail-value" id="isActiveValue"><span class="loading-value"></span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-link"></i> Referans Kodu</div>
+                                <div class="detail-value" id="referralCodeValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <div class="section-title">
+                            <i class="fas fa-laptop"></i> Cihaz Bilgileri
+                        </div>
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <div class="detail-label"><i class="fas fa-mobile-alt"></i> Cihaz</div>
+                                <div class="detail-value" id="deviceInfoValue"><span class="loading-value"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from '../assets/js/firebaseConfig.js';
+        import { loadUserData, checkAuthAndLoadData } from '../assets/js/auth.js';
+        import { loadSidebar } from '../assets/js/sidebar.js';
+
+        // Sayfa yüklendiğinde kullanıcı bilgilerini yükle
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Önce sidebar'ı yükle
+                await loadSidebar();
+                
+                // Responsive sidebar toggle functionality
+                setupResponsiveBehavior();
+                
+                // Kullanıcı oturumunu kontrol et
+                await checkAuthAndLoadData();
+
+                const user = auth.currentUser;
+                if (user) {
+                    await loadUserData(user.uid);
+                    
+                    // Update user display name in sidebar
+                    const userData = await getUserData(user.uid);
+                    if (userData) {
+                        document.getElementById('userNameDisplay').textContent = userData.fullName || userData.username || 'Kullanıcı';
+                        document.getElementById('userRoleDisplay').textContent = userData.role || 'Kullanıcı';
+                        
+                        // Set verified badges
+                        if (document.getElementById('phoneVerifiedValue').textContent === 'true') {
+                            document.getElementById('phoneVerifiedValue').innerHTML = '<span class="verified-badge"><i class="fas fa-check-circle"></i> Doğrulanmış</span>';
+                        } else {
+                            document.getElementById('phoneVerifiedValue').innerHTML = '<span class="not-verified-badge"><i class="fas fa-times-circle"></i> Doğrulanmamış</span>';
+                        }
+                        
+                        // Set active badge
+                        if (document.getElementById('isActiveValue').textContent === 'true') {
+                            document.getElementById('isActiveValue').innerHTML = '<span class="active-badge"><i class="fas fa-check-circle"></i> Aktif</span>';
+                        } else {
+                            document.getElementById('isActiveValue').innerHTML = '<span class="not-verified-badge"><i class="fas fa-times-circle"></i> Pasif</span>';
+                        }
+                        
+                        // Set avatar if available
+                        if (userData.photoURL) {
+                            document.getElementById('userAvatar').innerHTML = `<img src="${userData.photoURL}" alt="Profil" class="avatar-image">`;
+                        }
+                    }
+                } else {
+                    console.error('Kullanıcı oturumu bulunamadı');
+                }
+            } catch (error) {
+                console.error('Profil bilgileri yüklenirken hata:', error);
+            }
+        });
+        
+        async function getUserData(userId) {
+            try {
+                // This function should be implemented to get user data from Firestore
+                // For now, we'll just return the data from the DOM
+                return {
+                    fullName: document.getElementById('fullNameValue').textContent,
+                    username: document.getElementById('usernameValue').textContent,
+                    role: document.getElementById('roleValue').textContent,
+                    photoURL: null // You can set this if you have user photos
+                };
+            } catch (error) {
+                console.error('Kullanıcı bilgileri alınırken hata:', error);
+                return null;
+            }
+        }
+        
+        function setupResponsiveBehavior() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    mainContent.classList.toggle('sidebar-active');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 992 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                    mainContent.classList.remove('sidebar-active');
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 992) {
+                    if (sidebar) {
+                        sidebar.classList.remove('active');
+                    }
+                    mainContent.classList.remove('sidebar-active');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

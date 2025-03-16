@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İş Paylaş</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/themes.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <style>
+        .main-content {
+            margin-left: 250px; /* Match sidebar width */
+            padding: 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .share-job-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .share-job-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .share-job-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .share-job-header h1 i {
+            color: var(--primary-color, #764ba2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #d1d1d1;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color, #764ba2);
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2);
+            background: #fff;
+        }
+        
+        .form-control::placeholder {
+            color: #aaa;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .location-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color, #764ba2);
+        }
+
+        .submit-btn {
+            background: var(--primary-color, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-color-dark, #5d3b81);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-btn:disabled {
+            background: var(--disabled-color, #ccc);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            color: var(--error-color, #dc3545);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 0.5rem;
+            border-radius: 4px;
+            border-left: 3px solid #dc3545;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--primary-color, #764ba2);
+            transform: translateX(-3px);
+        }
+        
+        /* Custom checkbox styling */
+        .custom-checkbox {
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .custom-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            position: absolute;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #fff;
+            border: 2px solid #d1d1d1;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-checkbox:hover input ~ .checkmark {
+            background-color: #f0f0f0;
+            border-color: #aaa;
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: var(--primary-color, #764ba2);
+            border-color: var(--primary-color, #764ba2);
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .custom-checkbox .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 6px;
+            height: 11px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        /* Form section styling */
+        .form-section {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color, #764ba2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--primary-color, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--button-hover, #8a5bb7);
+            transform: scale(1.05);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .share-job-container {
+                padding: 1.5rem;
+            }
+            
+            .share-job-header h1 {
+                font-size: 1.5rem;
+                margin-left: 40px; /* Make room for the toggle button */
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.8rem;
+            }
+            
+            .share-job-container {
+                padding: 1rem;
+                border-radius: 10px;
+            }
+            
+            .share-job-header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .form-control {
+                padding: 0.8rem;
+            }
+            
+            .submit-btn {
+                padding: 0.8rem 1.5rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+        }
+        
+        /* When sidebar is active on mobile */
+        .main-content.sidebar-active {
+            margin-left: 250px;
+        }
+        
+        /* Sidebar active state for mobile */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content.sidebar-active {
+                margin-left: 0;
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile sidebar toggle button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="main-content">
+    <div class="share-job-container">
+            <div class="share-job-header">
+                <h1><i class="fas fa-briefcase"></i> Yeni İş İlanı</h1>
+            </div>
+            
+        <form id="shareJobForm">
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle"></i> İş Bilgileri
+                    </div>
+            <div class="form-group">
+                <label for="jobName">İş Adı</label>
+                        <input type="text" id="jobName" class="form-control" maxlength="20" placeholder="İş adını girin" required>
+            </div>
+            <div class="form-group">
+                <label for="jobCategory">İş Kategorisi</label>
+                        <input type="text" id="jobCategory" class="form-control" maxlength="20" placeholder="Kategori seçin" required>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-align-left"></i> İş Detayları
+            </div>
+            <div class="form-group">
+                <label for="jobDescription">İş Açıklaması</label>
+                        <textarea id="jobDescription" class="form-control" rows="4" maxlength="150" placeholder="İş hakkında detaylı bilgi verin" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="jobPrice">İş Ücreti (₺)</label>
+                        <input type="number" id="jobPrice" class="form-control" min="0" max="999999" placeholder="0" required>
+                    </div>
+            </div>
+                
+            <div class="location-checkbox">
+                    <label class="custom-checkbox">
+                <input type="checkbox" id="shareLocation">
+                        <span class="checkmark"></span>
+                        Yakındaki kullanıcılara göster (Konumunuz paylaşılacak)
+                    </label>
+            </div>
+                
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-share"></i> İlanı Paylaş
+            </button>
+        </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth, 
+            firestore,
+            onAuthStateChanged,
+            collection, 
+            addDoc,
+            doc,
+            getDoc,
+            serverTimestamp 
+        } from './assets/js/firebaseConfig.js';
+        import { loadSidebar } from './assets/js/sidebar.js';
+        import { checkAuthAndLoadData } from './assets/js/auth.js';
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('İş paylaşma sayfası yükleniyor...');
+            
+            try {
+                // Oturum kontrolü
+                const isAuthenticated = await checkAuthAndLoadData();
+                if (!isAuthenticated) {
+                    console.log('Oturum bulunamadı, yönlendiriliyor...');
+                    window.location.href = '/register.html';
+                    return;
+                }
+                
+                console.log('Oturum doğrulandı, sidebar yükleniyor...');
+                // Sidebar'ı yükle
+                await loadSidebar();
+                
+                // Form elementlerini kontrol et
+                const shareJobForm = document.getElementById('shareJobForm');
+                if (!shareJobForm) {
+                    console.error('Form elementi bulunamadı!');
+                    return;
+                }
+                
+                // Form submit olayını dinle
+                shareJobForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    console.log('Form gönderiliyor...');
+                    
+                    // Submit butonunu devre dışı bırak
+                    const submitButton = document.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> İşleniyor...';
+                    }
+                    
+                    try {
+                        // Kullanıcı bilgilerini al
+                        let userId, userInfo;
+                        
+                        // Firebase Auth kontrolü
+                        if (auth.currentUser) {
+                            userId = auth.currentUser.uid;
+                            const userDoc = await getDoc(doc(firestore, 'users', userId));
+                            if (userDoc.exists()) {
+                                userInfo = userDoc.data();
+                            } else {
+                                throw new Error('Kullanıcı bilgileri bulunamadı');
+                            }
+                        } 
+                        // QR oturumu kontrolü
+                        else {
+                            const qrSessionData = localStorage.getItem('qrSession');
+                            if (qrSessionData) {
+                                const qrSession = JSON.parse(qrSessionData);
+                                userId = qrSession.uid;
+                                const userDoc = await getDoc(doc(firestore, 'users', userId));
+                                if (userDoc.exists()) {
+                                    userInfo = userDoc.data();
+                                } else {
+                                    throw new Error('Kullanıcı bilgileri bulunamadı');
+                                }
+                            } else {
+                                throw new Error('Oturum bulunamadı');
+                            }
+                        }
+                        
+                        // Form verilerini al
+                        const jobName = document.getElementById('jobName').value;
+                        const jobCategory = document.getElementById('jobCategory').value;
+                        const jobDescription = document.getElementById('jobDescription').value;
+                        const jobPrice = parseFloat(document.getElementById('jobPrice').value);
+                        const shareLocation = document.getElementById('shareLocation').checked;
+                        
+                        // Form doğrulama
+                        if (!jobName || !jobCategory || !jobDescription || isNaN(jobPrice)) {
+                            throw new Error('Lütfen tüm alanları doldurun');
+                        }
+                        
+                        // İş verisi oluştur
+                        const jobData = {
+                            jobName,
+                            category: jobCategory,
+                            jobDescription,
+                            jobPrice,
+                            employerId: userId,
+                            employerName: userInfo.fullName || userInfo.username || 'İsimsiz Kullanıcı',
+                            status: 'active',
+                            views: 0,
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        };
+                        
+                        // Konum bilgisi ekle
+                        if (shareLocation) {
+                            try {
+                                const position = await new Promise((resolve, reject) => {
+                                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                        enableHighAccuracy: true,
+                                        timeout: 10000,
+                                        maximumAge: 0
+                                    });
+                                });
+                                
+                                jobData.location = {
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    accuracy: position.coords.accuracy
+                                };
+                                
+                                // Adres bilgisini al (reverse geocoding)
+                                try {
+                                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}&zoom=18&addressdetails=1`);
+                                    const data = await response.json();
+                                    
+                                    if (data && data.display_name) {
+                                        jobData.address = data.display_name;
+                                    }
+                                } catch (error) {
+                                    console.error('Adres bilgisi alınamadı:', error);
+                                }
+                            } catch (error) {
+                                console.error('Konum bilgisi alınamadı:', error);
+                            }
+                        }
+                        
+                        // Firestore'a kaydet
+                        const docRef = await addDoc(collection(firestore, 'jobs'), jobData);
+                        console.log('İş başarıyla paylaşıldı:', docRef.id);
+                        
+                        // Başarı mesajı göster
+                        alert('İş başarıyla paylaşıldı!');
+                        
+                        // Ana sayfaya yönlendir
+                        window.location.href = '/homepage.html';
+                    } catch (error) {
+                        console.error('İş paylaşma hatası:', error);
+                        alert('İş paylaşılırken bir hata oluştu: ' + error.message);
+                        
+                        // Submit butonunu tekrar aktif et
+                        if (submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = 'İşi Paylaş';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Sayfa yükleme hatası:', error);
+            }
+        });
+        
+        function setupResponsiveBehavior() {
+            // Sidebar toggle functionality
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    mainContent.classList.toggle('sidebar-active');
+                });
+            }
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 992 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                    mainContent.classList.remove('sidebar-active');
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 992) {
+                    if (sidebar) {
+                        sidebar.classList.remove('active');
+                    }
+                    mainContent.classList.remove('sidebar-active');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

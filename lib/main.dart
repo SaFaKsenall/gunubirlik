@@ -338,14 +338,18 @@ class _ConnectionWrapperState extends State<ConnectionWrapper>
     checkConnectivity();
   }
 
-  Future<void> checkConnectivity() async {
+Future<void> checkConnectivity() async {
     final connectivity = Connectivity();
-    final ConnectivityResult connectivityResult =
+    final List<ConnectivityResult> connectivityResult =
         await connectivity.checkConnectivity();
-    updateConnectionStatus(connectivityResult);
+    updateConnectionStatus(connectivityResult.isNotEmpty 
+        ? connectivityResult.first 
+        : ConnectivityResult.none);
 
-    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      updateConnectionStatus(result);
+    connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      updateConnectionStatus(results.isNotEmpty 
+          ? results.first 
+          : ConnectivityResult.none);
     });
   }
 

@@ -20,7 +20,7 @@
     }
   },
   "hosting": {
-    "public": "public",
+    "public": "lib/backend/public",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -28,13 +28,23 @@
     ],
     "rewrites": [
       {
-        "source": "/reset_password",
-        "destination": "/index.html"
+        "source": "**/*.html/**",
+        "destination": "/404.html"
+      },
+      {
+        "source": "/register.html/**",
+        "destination": "/404.html"
       },
       {
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "redirects": [],
+    "headers": [],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "appAssociation": "AUTO",
+    "404": "/404.html"
   }
 }

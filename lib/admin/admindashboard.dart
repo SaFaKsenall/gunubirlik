@@ -1963,8 +1963,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         if (currentUser == null)
                           throw Exception('Kullanıcı oturumu bulunamadı');
 
-                        String username = 'jewelkaan01@gmail.com';
-                        String password = 'pxaj buxl ddmd unio';
+                        String username = 'gunubirlik.destek@gmail.com';
+                        String password = 'smyd uzoy psyt fsvd';
                         final smtpServer = gmail(username, password);
 
                         // Aktivasyon kodu e-postası için özel işlem
